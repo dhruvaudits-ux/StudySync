@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en"> <!-- 'light' or 'dark' managed via JS strictly -->
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>StudySync - {% block title %}{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    
+    <!-- Dark Mode Init Script BEFORE Render to prevent flash -->
+    <script>
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+
+    <script id="tailwind-config">
+          tailwind.config = {
+            darkMode: "class",
+            theme: {
+              extend: {
+                colors: {
+                  primary: "#005dac",     // Blue branding
+                  "primary-dark": "#004786",
+                  surface: "#f8f9fa",     // standard light
+                  "surface-dark": "#0f172a", // standard dark (slate-900)
+                  "surface-container": "#ffffff",
+                  "surface-container-dark": "#1e293b", // slate-800
+                },
+                fontFamily: {
+                  headline: ["Poppins", "sans-serif"],
+                  body: ["Inter", "sans-serif"],
+                },
+                boxShadow: {
+                  'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
+                  'soft-dark': '0 4px 20px -2px rgba(0, 0, 0, 0.5)',
+                }
+              },
+            },
+          }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        /* Smooth color transitons system-wide */
+        body { margin: 0; padding: 0; min-height: 100vh; }
+        .theme-transition {
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, fill 0.3s ease;
+        }
+    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block head %}{% endblock %}
+</head>
+
+<body class="bg-surface dark:bg-slate-900 font-body text-slate-800 dark:text-slate-200 antialiased theme-transition overflow-x-hidden">
+    
+    <!-- Sidebar Overlay (Mobile) -->
+    <div id="sidebar-overlay" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40 hidden md:hidden transition-opacity" onclick="toggleSidebar()"></div>
+
+    <!-- Fixed Left Sidebar -->
+    <aside id="sidebar" class="fixed left-0 top-0 h-screen w-64 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700/50 shadow-[4px_0_24px_rgba(0,0,0,0.02)] dark:shadow-[4px_0_24px_rgba(0,0,0,0.2)] z-50 flex flex-col transition-transform duration-300 -translate-x-full md:translate-x-0">
+        <!-- Brand Header -->
+        <div class="h-16 flex items-center justify-between px-6 border-b border-slate-100 dark:border-slate-700/50">
+            <a href="{{ url_for('dashboard') }}" class="flex items-center gap-2 text-primary dark:text-blue-400 font-headline font-extrabold text-xl tracking-tight">
+                <span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">menu_book</span>
+                StudySync
+            </a>
+            <!-- Mobile Close Button -->
+            <button onclick="toggleSidebar()" class="md:hidden text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+
+        <!-- Navigation Links -->
+        <nav class="flex-1 px-4 py-8 flex flex-col gap-2 overflow-y-auto">
+            {% set nav_items = [
+                ('dashboard', 'space_dashboard', 'Dashboard'),
+                ('subjects', 'auto_stories', 'Subjects'),
+                ('pyqs', 'description', 'Question Papers'),
+                ('planner', 'event_note', 'Study Planner'),
+                ('activity', 'insights', 'Activity & Analytics')
+            ] %}
+            
+            {% for endpoint, icon, label in nav_items %}
+                <a href="{{ url_for(endpoint) }}" 
+                   class="flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all group
+                          {% if request.endpoint == endpoint %}
+                              bg-primary/10 dark:bg-primary/20 text-primary dark:text-blue-400 font-semibold shadow-sm
+                          {% else %}
+                              text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700/50 hover:text-slate-800 dark:hover:text-slate-200
+                          {% endif %}">
+                    <span class="material-symbols-outlined {% if request.endpoint == endpoint %}scale-110{% else %}opacity-70 group-hover:opacity-100{% endif %} transition-transform">{{ icon }}</span>
+                    {{ label }}
+                </a>
+            {% endfor %}
+        </nav>
+
+        <!-- Sidebar Footer / User Banner -->
+        {% if current_user.is_authenticated %}
+        <div class="p-4 border-t border-slate-100 dark:border-slate-700/50 bg-slate-50/50 dark:bg-slate-800/50">
+            <div class="flex items-center gap-3 w-full">
+                <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-primary to-blue-400 text-white flex items-center justify-center font-bold shadow-md shrink-0">
+                    {{ current_user.name[:1] | upper }}
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-bold text-slate-800 dark:text-slate-200 truncate">{{ current_user.name }}</p>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 truncate">{{ current_user.email }}</p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </aside>
+
+    <!-- Main Workspace Area -->
+    <div class="md:ml-64 flex flex-col min-h-screen transition-all duration-300">
+        
+        <!-- Top Navigation Bar (Fixed to top but offset by sidebar) -->
+        <header class="sticky top-0 z-30 h-16 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-700/50 flex items-center justify-between px-4 sm:px-8 shadow-sm">
+            
+            <div class="flex items-center gap-4">
+                <!-- Hamburger Menu Trigger (Mobile) -->
+                <button onclick="toggleSidebar()" class="md:hidden text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition">
+                    <span class="material-symbols-outlined">menu</span>
+                </button>
+                
+                <!-- Search Bar (Aesthetic Mock) -->
+                <div class="hidden sm:flex items-center bg-slate-100 dark:bg-slate-700/50 text-slate-400 px-4 py-2 rounded-full focus-within:ring-2 focus-within:ring-primary/50 focus-within:bg-white dark:focus-within:bg-slate-800 transition-all border border-transparent dark:border-slate-600/30">
+                    <span class="material-symbols-outlined text-lg mr-2">search</span>
+                    <input type="text" placeholder="Search resources..." class="bg-transparent border-none outline-none text-sm w-48 focus:w-64 transition-all text-slate-700 dark:text-slate-200 placeholder-slate-400">
+                </div>
+            </div>
+
+            <!-- Top Nav Right Actions -->
+            <div class="flex items-center gap-3 sm:gap-5">
+                
+                <!-- Dark Mode Toggle Button -->
+                <button id="theme-toggle" class="p-2 text-slate-500 hover:text-primary dark:text-slate-400 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full transition-colors flex items-center justify-center">
+                    <!-- Icon replaced via JS -->
+                    <span id="theme-icon" class="material-symbols-outlined">light_mode</span>
+                </button>
+
+                <!-- Action Notifications -->
+                <div class="relative flex items-center justify-center" id="notifWrapper">
+                    <button id="notifBtn" onclick="toggleNotifDropdown()" class="p-2 text-slate-500 hover:text-primary dark:text-slate-400 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full transition-colors relative flex items-center justify-center focus:outline-none">
+                        <span class="material-symbols-outlined">notifications</span>
+                        <!-- Notification Badge -->
+                        {% if unread_count > 0 %}
+                        <span id="notifBadge" class="absolute top-0.5 right-0 w-4 h-4 bg-red-500 text-white text-[9px] font-bold rounded-full border-2 border-white dark:border-slate-800 flex items-center justify-center transition-all duration-300 transform scale-100">
+                            {{ unread_count }}
+                        </span>
+                        {% endif %}
+                    </button>
+                    
+                    <!-- Notification Dropdown Menu -->
+                    <div id="notifMenu" class="absolute right-[-45px] sm:right-0 mt-14 top-0 w-[85vw] max-w-sm sm:w-80 bg-white dark:bg-slate-800 rounded-2xl shadow-xl dark:shadow-soft-dark border border-slate-100 dark:border-slate-700/80 transform opacity-0 scale-95 pointer-events-none transition-all duration-200 origin-top-right z-50 overflow-hidden flex flex-col max-h-[80vh]">
+                        <div class="p-4 border-b border-slate-100 dark:border-slate-700/50 bg-slate-50/50 dark:bg-slate-800/50 flex items-center justify-between shrink-0">
+                            <h3 class="text-sm font-bold text-slate-800 dark:text-white">Notifications</h3>
+                            <button id="markAllBtn" onclick="markAllRead()" class="text-xs font-bold text-primary dark:text-blue-400 hover:underline transition-colors focus:outline-none disabled:opacity-50">Mark all read</button>
+                        </div>
+                        
+                        <!-- Notifications List -->
+                        <div class="overflow-y-auto w-full flex flex-col custom-scrollbar max-h-72">
+                            {% if notifications %}
+                                {% for notif in notifications %}
+                                <a href="#" class="block p-4 border-b border-slate-50 dark:border-slate-700/30 transition-colors notif-item {{ 'bg-blue-50/50 dark:bg-blue-900/10 notif-unread hover:bg-blue-50 dark:hover:bg-blue-900/20' if not notif.is_read else 'hover:bg-slate-50 dark:hover:bg-slate-700/50' }}">
+                                    <div class="flex gap-3">
+                                        {% if notif.action == 'login' %}
+                                        <div class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 flex items-center justify-center shrink-0">
+                                            <span class="material-symbols-outlined text-sm">login</span>
+                                        </div>
+                                        <div>
+                                            <p class="text-sm font-bold text-slate-800 dark:text-slate-200">Security Login</p>
+                                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 line-clamp-2">You securely authenticated your platform session.</p>
+                                            <p class="text-[10px] font-bold text-slate-400 dark:text-slate-500 mt-2 uppercase tracking-wide">{{ notif.timestamp.strftime('%d %b, %H:%M') }}</p>
+                                        </div>
+                                        {% elif notif.action == 'completed_task' %}
+                                        <div class="w-8 h-8 rounded-full bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                                            <span class="material-symbols-outlined text-sm">check_circle</span>
+                                        </div>
+                                        <div>
+                                            <p class="text-sm font-bold text-slate-800 dark:text-slate-200">Task Completed</p>
+                                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 line-clamp-2">Excellent progress registering completed studies.</p>
+                                            <p class="text-[10px] font-bold text-slate-400 dark:text-slate-500 mt-2 uppercase tracking-wide">{{ notif.timestamp.strftime('%d %b, %H:%M') }}</p>
+                                        </div>
+                                        {% else %}
+                                        <div class="w-8 h-8 rounded-full bg-blue-50 dark:bg-blue-500/10 text-primary dark:text-blue-400 flex items-center justify-center shrink-0">
+                                            <span class="material-symbols-outlined text-sm">notifications</span>
+                                        </div>
+                                        <div>
+                                            <p class="text-sm font-bold text-slate-800 dark:text-slate-200">System Activity</p>
+                                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 line-clamp-2">Action: {{ notif.action.replace('_', ' ').title() }} tracking synchronized securely.</p>
+                                            <p class="text-[10px] font-bold text-slate-400 dark:text-slate-500 mt-2 uppercase tracking-wide">{{ notif.timestamp.strftime('%d %b, %H:%M') }}</p>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </a>
+                                {% endfor %}
+                            {% else %}
+                                <div class="p-8 flex items-center justify-center flex-col gap-2 text-center">
+                                    <span class="material-symbols-outlined text-4xl text-slate-200 dark:text-slate-600">notifications_off</span>
+                                    <p class="text-sm font-bold text-slate-400 dark:text-slate-500">No new notifications</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="p-3 text-center border-t border-slate-100 dark:border-slate-700/50 bg-slate-50/50 dark:bg-slate-800/50 shrink-0">
+                            <a href="#" class="text-xs font-bold text-slate-500 dark:text-slate-400 hover:text-primary dark:hover:text-blue-400 transition-colors">View All Notifications</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="h-6 w-px bg-slate-200 dark:bg-slate-700 hidden sm:block"></div>
+
+                <!-- Auth Navigation -->
+                {% if current_user.is_authenticated %}
+                <div class="relative ml-2" id="profileDropdownWrapper">
+                    <button onclick="toggleProfileDropdown()" class="w-10 h-10 rounded-full border-2 border-slate-200 dark:border-slate-700 hover:border-primary dark:hover:border-blue-400 focus:outline-none overflow-hidden transition-all shadow-sm group bg-slate-50 dark:bg-slate-700">
+                        {% if current_user.profile_pic %}
+                            <img src="{{ url_for('static', filename=current_user.profile_pic) }}" alt="Avatar" class="w-full h-full object-cover group-hover:scale-105 transition-transform">
+                        {% else %}
+                            <div class="w-full h-full bg-gradient-to-tr from-primary to-blue-400 text-white flex items-center justify-center font-bold text-lg pb-0.5">
+                                {{ current_user.name[:1] | upper }}
+                            </div>
+                        {% endif %}
+                    </button>
+                    
+                    <!-- Dropdown Menu -->
+                    <div id="profileDropdown" class="absolute right-0 mt-3 w-64 bg-white dark:bg-slate-800 rounded-2xl shadow-xl dark:shadow-soft-dark border border-slate-100 dark:border-slate-700/80 transform opacity-0 scale-95 pointer-events-none transition-all duration-200 origin-top-right z-50 overflow-hidden">
+                        <div class="p-5 border-b border-slate-100 dark:border-slate-700/50 bg-slate-50/50 dark:bg-slate-800/50 flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full border border-slate-200 dark:border-slate-700 overflow-hidden shrink-0">
+                                {% if current_user.profile_pic %}
+                                    <img src="{{ url_for('static', filename=current_user.profile_pic) }}" alt="Avatar" class="w-full h-full object-cover">
+                                {% else %}
+                                    <div class="w-full h-full bg-gradient-to-tr from-primary to-blue-400 text-white flex items-center justify-center font-bold text-lg pb-0.5">
+                                        {{ current_user.name[:1] | upper }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-bold text-slate-800 dark:text-white truncate">{{ current_user.name }}</p>
+                                <p class="text-[11px] font-medium text-slate-500 dark:text-slate-400 truncate leading-tight">{{ current_user.email }}</p>
+                            </div>
+                        </div>
+                        <div class="p-2 flex flex-col gap-1">
+                            <a href="{{ url_for('account') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-blue-400 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors group">
+                                <span class="material-symbols-outlined text-lg opacity-70 group-hover:opacity-100">manage_accounts</span>
+                                My Account
+                            </a>
+                            <a href="{{ url_for('logout') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors mt-1 group">
+                                <span class="material-symbols-outlined text-lg opacity-70 group-hover:opacity-100">logout</span>
+                                Logout
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <a href="{{ url_for('login') }}" class="hidden sm:flex items-center gap-2 text-sm font-bold text-white bg-primary hover:bg-primary-dark px-4 py-2 rounded-xl transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
+                    Login
+                </a>
+                {% endif %}
+            </div>
+        </header>
+
+        <!-- Dynamic Flash Notifications Overlay -->
+        <div class="absolute top-20 right-8 z-50 flex flex-col gap-3 pointer-events-none" id="flash-container">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="flash-message transform translate-x-full transition-all duration-500 ease-out p-4 pr-12 rounded-xl shadow-lg border pointer-events-auto relative
+                            {% if category == 'error' %}bg-red-50 border-red-200 text-red-800 dark:bg-red-900/40 dark:border-red-800/50 dark:text-red-200
+                            {% else %}bg-emerald-50 border-emerald-200 text-emerald-800 dark:bg-emerald-900/40 dark:border-emerald-800/50 dark:text-emerald-200{% endif %}">
+                            <div class="flex items-center gap-3">
+                                <span class="material-symbols-outlined">{% if category == 'error' %}error{% else %}check_circle{% endif %}</span>
+                                <p class="text-sm font-bold">{{ message }}</p>
+                            </div>
+                            <button onclick="this.parentElement.remove()" class="absolute right-3 top-1/2 -translate-y-1/2 opacity-50 hover:opacity-100 transition-opacity">
+                                <span class="material-symbols-outlined text-xl">close</span>
+                            </button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+
+        <!-- Page Content Injected Here -->
+        <main class="flex-1 p-6 md:p-8 xl:p-10 max-w-7xl mx-auto w-full">
+            {% block content %}{% endblock %}
+        </main>
+        
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // --- Sidebar Mobile Toggle Logic ---
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            
+            if (sidebar.classList.contains('-translate-x-full')) {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            }
+        }
+
+        // --- Dark Mode Switching Logic ---
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
+
+        // Initial setup for Icon
+        if (document.documentElement.classList.contains('dark')) {
+            themeIcon.innerText = 'dark_mode';
+        } else {
+            themeIcon.innerText = 'light_mode';
+        }
+
+        themeToggleBtn.addEventListener('click', function() {
+            document.documentElement.classList.toggle('dark');
+            const isDark = document.documentElement.classList.contains('dark');
+            
+            // Save state
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            
+            // Swap icon smoothly
+            themeIcon.style.opacity = '0';
+            setTimeout(() => {
+                themeIcon.innerText = isDark ? 'dark_mode' : 'light_mode';
+                themeIcon.style.opacity = '1';
+                themeIcon.style.transition = 'opacity 0.2s';
+            }, 150);
+        });
+
+        // --- Flash Messages Fader ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const flashes = document.querySelectorAll('.flash-message');
+            // Animate in
+            setTimeout(() => {
+                flashes.forEach(f => f.classList.remove('translate-x-full'));
+            }, 100);
+            
+            // Animate out automatically safely 
+            setTimeout(() => {
+                flashes.forEach(f => {
+                    if(document.body.contains(f)) {
+                        f.style.opacity = '0';
+                        f.style.transform = 'translateY(-10px)';
+                        setTimeout(() => f.remove(), 500);
+                    }
+                });
+            }, 4500);
+        });
+
+        // --- Profile Dropdown Logic ---
+        function toggleProfileDropdown() {
+            const dropdown = document.getElementById('profileDropdown');
+            const notifMenu = document.getElementById('notifMenu');
+            
+            // Close notif if open
+            if (notifMenu && !notifMenu.classList.contains('opacity-0')) {
+                notifMenu.classList.add('opacity-0', 'scale-95', 'pointer-events-none');
+                notifMenu.classList.remove('opacity-100', 'scale-100', 'pointer-events-auto');
+            }
+
+            if (dropdown.classList.contains('opacity-0')) {
+                dropdown.classList.remove('opacity-0', 'scale-95', 'pointer-events-none');
+                dropdown.classList.add('opacity-100', 'scale-100', 'pointer-events-auto');
+            } else {
+                dropdown.classList.add('opacity-0', 'scale-95', 'pointer-events-none');
+                dropdown.classList.remove('opacity-100', 'scale-100', 'pointer-events-auto');
+            }
+        }
+        
+        // --- Notification Dropdown Logic ---
+        function toggleNotifDropdown() {
+            const dropdown = document.getElementById('notifMenu');
+            const profileMenu = document.getElementById('profileDropdown');
+            
+            // Close profile if open
+            if (profileMenu && !profileMenu.classList.contains('opacity-0')) {
+                profileMenu.classList.add('opacity-0', 'scale-95', 'pointer-events-none');
+                profileMenu.classList.remove('opacity-100', 'scale-100', 'pointer-events-auto');
+            }
+
+            if (dropdown.classList.contains('opacity-0')) {
+                dropdown.classList.remove('opacity-0', 'scale-95', 'pointer-events-none');
+                dropdown.classList.add('opacity-100', 'scale-100', 'pointer-events-auto');
+            } else {
+                dropdown.classList.add('opacity-0', 'scale-95', 'pointer-events-none');
+                dropdown.classList.remove('opacity-100', 'scale-100', 'pointer-events-auto');
+            }
+        }
+        
+        // Close dropdowns when clicking outside completely seamlessly
+        document.addEventListener('click', function(event) {
+            // Profile Off-Click
+            const profileWrapper = document.getElementById('profileDropdownWrapper');
+            const profileDropdown = document.getElementById('profileDropdown');
+            if (profileWrapper && profileDropdown && !profileWrapper.contains(event.target)) {
+                profileDropdown.classList.add('opacity-0', 'scale-95', 'pointer-events-none');
+                profileDropdown.classList.remove('opacity-100', 'scale-100', 'pointer-events-auto');
+            }
+            
+            // Notification Off-Click
+            const notifWrapper = document.getElementById('notifWrapper');
+            const notifMenu = document.getElementById('notifMenu');
+            if (notifWrapper && notifMenu && !notifWrapper.contains(event.target)) {
+                notifMenu.classList.add('opacity-0', 'scale-95', 'pointer-events-none');
+                notifMenu.classList.remove('opacity-100', 'scale-100', 'pointer-events-auto');
+            }
+        });
+        
+        // --- Fetch Mark All Read ---
+        function markAllRead() {
+            const btn = document.getElementById('markAllBtn');
+            btn.disabled = true;
+            btn.innerHTML = 'Updating...';
+            
+            fetch("{{ url_for('mark_all_read') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.status === 'success') {
+                    // Visually disable red dot
+                    const badge = document.getElementById('notifBadge');
+                    if(badge) {
+                        badge.classList.remove('scale-100');
+                        badge.classList.add('scale-0');
+                        setTimeout(() => badge.remove(), 300);
+                    }
+                    
+                    // Visually disable unread backgrounds synchronously
+                    const unreadItems = document.querySelectorAll('.notif-unread');
+                    unreadItems.forEach(item => {
+                        item.classList.remove('bg-blue-50/50', 'dark:bg-blue-900/10', 'notif-unread', 'hover:bg-blue-50', 'dark:hover:bg-blue-900/20');
+                        item.classList.add('hover:bg-slate-50', 'dark:hover:bg-slate-700/50');
+                    });
+                    
+                    btn.innerHTML = 'All clear!';
+                    setTimeout(() => btn.innerHTML = 'Mark all read', 2000);
+                    btn.disabled = false;
+                }
+            })
+            .catch(err => {
+                btn.innerHTML = 'Error';
+                btn.disabled = false;
+                console.error(err);
+            });
+        }
+
+        // --- Form Submission Loading States ---
+        document.addEventListener('submit', function(e) {
+            const btn = e.target.querySelector('button[type="submit"]');
+            if(btn && !btn.classList.contains('no-spin')) {
+                if(!btn.classList.contains('flex')) {
+                    btn.classList.add('flex', 'items-center', 'justify-center', 'gap-2');
+                }
+                const originalText = btn.innerText;
+                btn.innerHTML = `<span class="material-symbols-outlined animate-spin text-lg">autorenew</span> ${originalText.trim() === 'Update' || originalText.trim() === 'Sign In' ? originalText : 'Processing...'}`;
+                btn.style.opacity = '0.8';
+                btn.style.pointerEvents = 'none';
+            }
+        });
+    </script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

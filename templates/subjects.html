@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Subjects{% endblock %}
+
+{% block content %}
+<div class="space-y-12">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+        <div>
+            <h2 class="font-headline text-4xl font-extrabold text-slate-800 dark:text-white">Your Engineering Curriculum</h2>
+            <p class="text-slate-500 dark:text-slate-400 mt-2 text-lg">Track your progress across all current modules.</p>
+        </div>
+        <div class="px-5 py-2.5 bg-white dark:bg-slate-800 rounded-2xl flex items-center gap-3 border border-slate-200 dark:border-slate-700 shadow-sm">
+            <span class="material-symbols-outlined text-primary dark:text-blue-400">auto_stories</span>
+            <span class="font-bold text-sm uppercase tracking-widest dark:text-slate-300">{{ subjects|length }} Total Subjects</span>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {% for subject in subjects %}
+        <div class="group bg-white dark:bg-slate-800 p-8 rounded-2xl transition-all hover:shadow-soft dark:hover:shadow-soft-dark hover:-translate-y-1 border border-slate-100 dark:border-slate-700/50">
+            <div class="mb-6 w-14 h-14 rounded-2xl bg-slate-50 dark:bg-slate-700 flex items-center justify-center text-primary dark:text-blue-400 shadow-sm group-hover:bg-primary group-hover:text-white transition-colors duration-300 border border-slate-100 dark:border-slate-600">
+                <span class="material-symbols-outlined text-3xl">book</span>
+            </div>
+            <h3 class="text-2xl font-bold mb-3 font-headline dark:text-white">{{ subject.name }}</h3>
+            <p class="text-slate-500 dark:text-slate-400 mb-8 text-sm leading-relaxed">Systematic study and tracking for {{ subject.name }}.</p>
+            
+            <div class="space-y-4">
+                <div class="flex justify-between items-end">
+                    <span class="text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500">Progress</span>
+                    <span class="text-sm font-extrabold text-primary dark:text-blue-400">{{ subject.progress }}%</span>
+                </div>
+                <div class="h-2.5 w-full bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden p-0.5 shadow-inner">
+                    <div class="h-full bg-primary rounded-full transition-all duration-500 shadow-[0_0_8px_rgba(0,93,172,0.3)]" style="width: {{ subject.progress }}%"></div>
+                </div>
+                <!-- Update Progress Form -->
+                <form action="{{ url_for('update_progress', subject_id=subject.id) }}" method="POST" class="flex gap-2 mt-4 pt-4 border-t border-slate-100 dark:border-slate-700">
+                    <div class="relative flex-1">
+                        <input type="number" name="progress" min="0" max="100" value="{{ subject.progress }}" required
+                            class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700/50 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all dark:text-white">
+                        <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 dark:text-slate-500 font-bold">%</span>
+                    </div>
+                    <button type="submit" class="bg-primary/10 dark:bg-primary/20 hover:bg-primary/20 dark:hover:bg-primary/30 text-primary dark:text-blue-400 px-4 py-2 rounded-xl text-sm font-bold transition-colors">
+                        Update
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-span-full py-20 text-center space-y-4 bg-white dark:bg-slate-800 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-700">
+            <span class="material-symbols-outlined text-6xl text-slate-300 dark:text-slate-600">inventory_2</span>
+            <p class="text-slate-500 dark:text-slate-400 font-medium">No subjects found in your curriculum yet.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

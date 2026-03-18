@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "tertiary-container": "#ba5b00",
+              "on-secondary": "#ffffff",
+              "on-primary-fixed": "#001c3a",
+              "tertiary-fixed-dim": "#ffb688",
+              "tertiary": "#944700",
+              "tertiary-fixed": "#ffdbc7",
+              "surface-variant": "#e1e3e4",
+              "background": "#f8f9fa",
+              "on-tertiary-container": "#fffeff",
+              "inverse-primary": "#a5c8ff",
+              "surface-tint": "#005faf",
+              "on-background": "#191c1d",
+              "secondary-fixed-dim": "#b1c8ee",
+              "primary-fixed": "#d4e3ff",
+              "error-container": "#ffdad6",
+              "on-error": "#ffffff",
+              "inverse-on-surface": "#f0f1f2",
+              "on-primary-fixed-variant": "#004786",
+              "on-surface-variant": "#414752",
+              "error": "#ba1a1a",
+              "surface-container-highest": "#e1e3e4",
+              "on-tertiary": "#ffffff",
+              "surface": "#f8f9fa",
+              "primary": "#005dac",
+              "on-secondary-fixed": "#011c3a",
+              "secondary": "#495f80",
+              "on-primary": "#ffffff",
+              "on-secondary-fixed-variant": "#314867",
+              "on-primary-container": "#fffdff",
+              "surface-container-lowest": "#ffffff",
+              "on-tertiary-fixed-variant": "#733600",
+              "surface-bright": "#f8f9fa",
+              "secondary-container": "#c2d8ff",
+              "on-error-container": "#93000a",
+              "inverse-surface": "#2e3132",
+              "on-surface": "#191c1d",
+              "surface-container-low": "#f3f4f5",
+              "primary-container": "#1976d2",
+              "secondary-fixed": "#d4e3ff",
+              "on-tertiary-fixed": "#311300",
+              "outline-variant": "#c1c6d4",
+              "primary-fixed-dim": "#a5c8ff",
+              "on-secondary-container": "#485e7f",
+              "surface-container-high": "#e7e8e9",
+              "surface-container": "#edeeef",
+              "outline": "#717783",
+              "surface-dim": "#d9dadb"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "1.5rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .engineered-gradient {
+            background: linear-gradient(135deg, #005dac 0%, #1976d2 100%);
+        }
+        .glass-nav {
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface font-body text-on-surface antialiased">
+<!-- TopAppBar -->
+<header class="bg-slate-50/80 backdrop-blur-md shadow-sm fixed top-0 w-full z-50 flex justify-between items-center px-6 py-4">
+<div class="flex items-center gap-4">
+<button class="text-blue-700 hover:bg-slate-100 active:scale-95 duration-200 ease-in-out p-2 rounded-full">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+<h1 class="text-xl font-extrabold text-blue-800 tracking-tighter font-headline">StudySync</h1>
+</div>
+<div class="flex items-center gap-6">
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-slate-500 font-medium hover:bg-slate-100 transition-colors px-3 py-1 rounded-lg" href="#">Dashboard</a>
+<a class="text-slate-500 font-medium hover:bg-slate-100 transition-colors px-3 py-1 rounded-lg" href="#">Subjects</a>
+<a class="text-slate-500 font-medium hover:bg-slate-100 transition-colors px-3 py-1 rounded-lg" href="#">Planner</a>
+<a class="text-blue-700 font-semibold transition-colors px-3 py-1 rounded-lg" href="#">Account</a>
+</nav>
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-primary-container">
+<img alt="User profile" data-alt="Close up portrait of a young professional man smiling" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDM-H7dRtin9VuFnEPbPOw85fcNVnCyhXihFCTXeCGo5eV9vjQlb4YmskMBXaBd6Kw9Ug07S6zAqxTk_uAb2xIcbqe5-8troaIGOfhDzTKZNylDI9bRQmG1xaNO9bArqemz3k4ilqN0cQoWbL1d4GPWARuTObugrxyEATGYVBpz8UL5HjYlnnxGUFAv9e14Kcekc6ZNdet6Dgp3ZuLl1v7R003Gg-JvE1zVfnIIsbP4sZl-MvXkMr2qRa_3IptpAY0bVjMHLrM4eQg"/>
+</div>
+</div>
+</header>
+<main class="pt-24 pb-32 px-6 max-w-7xl mx-auto">
+<!-- Section Header -->
+<div class="mb-16 space-y-4">
+<div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed">
+<span class="material-symbols-outlined text-[18px]" data-icon="auto_awesome" data-weight="fill" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+<span class="font-label text-[0.75rem] font-bold uppercase tracking-widest">Coming Soon</span>
+</div>
+<h2 class="font-headline text-4xl md:text-5xl font-extrabold tracking-tight text-on-surface max-w-2xl">
+                The Future of Engineering <span class="text-primary">Workflow</span>
+</h2>
+<p class="text-on-surface-variant text-lg max-w-xl">
+                We're building the next generation of cognitive tools designed specifically for the rigor of engineering disciplines.
+            </p>
+</div>
+<!-- Features Bento Grid -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+<!-- AI Smart Study Suggestions (Large Card) -->
+<div class="md:col-span-8 group relative overflow-hidden bg-surface-container-low rounded-xl transition-all duration-300 hover:shadow-xl hover:shadow-primary/5">
+<div class="h-1 engineered-gradient w-full absolute top-0"></div>
+<div class="p-8 md:p-12 flex flex-col h-full">
+<div class="mb-8 w-16 h-16 rounded-2xl bg-primary-container flex items-center justify-center text-on-primary-container">
+<span class="material-symbols-outlined text-3xl" data-icon="psychology">psychology</span>
+</div>
+<div class="mt-auto">
+<h3 class="font-headline text-2xl font-bold mb-4">AI Smart Study Suggestions</h3>
+<p class="text-on-surface-variant leading-relaxed max-w-md mb-8">
+                            Our proprietary neural engine analyzes your lecture notes and problem sets to identify conceptual gaps, suggesting focused review sessions exactly when you need them.
+                        </p>
+<div class="flex flex-wrap gap-3">
+<span class="px-3 py-1 rounded-lg bg-surface-container-highest text-on-surface-variant font-label text-[11px] font-bold uppercase tracking-wider">Neural Mapping</span>
+<span class="px-3 py-1 rounded-lg bg-surface-container-highest text-on-surface-variant font-label text-[11px] font-bold uppercase tracking-wider">Predictive Review</span>
+</div>
+</div>
+<!-- Decorative abstract visual -->
+<div class="absolute -right-12 -bottom-12 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-[240px]" data-icon="model_training">model_training</span>
+</div>
+</div>
+</div>
+<!-- Community Chat (Tall Card) -->
+<div class="md:col-span-4 bg-surface-container-lowest border border-outline-variant/10 rounded-xl p-8 flex flex-col shadow-sm relative overflow-hidden group">
+<div class="mb-6 w-12 h-12 rounded-xl bg-secondary-container flex items-center justify-center text-on-secondary-container">
+<span class="material-symbols-outlined" data-icon="forum">forum</span>
+</div>
+<h3 class="font-headline text-xl font-bold mb-3">Community Chat</h3>
+<p class="text-on-surface-variant text-sm leading-relaxed mb-8">
+                    Peer-to-peer technical support. Connect with students in your specific course sections to solve complex engineering challenges together.
+                </p>
+<div class="mt-auto space-y-4">
+<div class="flex -space-x-3">
+<img alt="User" class="w-10 h-10 rounded-full border-2 border-surface-container-lowest" data-alt="Portrait of a male student" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoRxep4mJvi3odjeRnkiAb1g_HR3sCJTXMbl6Lyi-iLgd3VK4Kqwf-WuomQxUFV8Dp1JJapb7Xo4URGmz_A2n5X5Z5I3qzhfOvgedu5xC1VyMr60i8ONF_cRTdXSbecmRcGWy4VYn9J3YR_nimZdU_9SPJtUe8Ez8CLahPhb27K-j8l0OizldVoyHKOpWa87qEtpIKn_JD12sl7JaPbGyGV5Fo_A4HmVfHOc2J99TdOlcBDhAY9AutrkE0nt892e7iXKBGs0VJ6tk"/>
+<img alt="User" class="w-10 h-10 rounded-full border-2 border-surface-container-lowest" data-alt="Portrait of a female student" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCnYMEZtDXzrws8dk0dXLv_8SpIwiBMnLw8rPxAndHVb_PyyODQre8aLEohSmlONMjW9xaIP572EWlZssU3xYyKYPlcY-07wFP22l3eeScRV3xgj1_nXNfVQXTtjUbenDRxw6fF-9fa4IUa3Ey5VqRh79bDtMkl-oUpCCNg3zj91DxmwaZfL8Lvm9dJMnp1fTAnDXnqcSuba5kxTEAaYBmHpNaCJOKtP9Z0im3wty7ZsuzwGmh7_jBz7DSlLedrODi1E9bYZd8g100"/>
+<img alt="User" class="w-10 h-10 rounded-full border-2 border-surface-container-lowest" data-alt="Portrait of a young man with glasses" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA7GafSPtm1IEfDxAFuPFimXBDUUi3UMMtQod7mWE_6_FfZv-YCR0KxDKS5qzFH4fep_vpb8MfBFL8lFqqzXMxu5NoKvxvRCHpXQiEFAteSvQx9lFm5jYoJ2NiTMt_qErRn5GC7T7WRKi62cV9u6mp_-u9b0bjV2eFLbayvjsxuMKJ3wmopL-b71RjNizq49os1_bCgzkIDK-rMrOXrcZjo8VxuX-H8ONUy6fmQ9JSDPaa4Em0030BUmQKx6-PkwGgX9GShUCsXxms"/>
+<div class="w-10 h-10 rounded-full border-2 border-surface-container-lowest bg-surface-container-high flex items-center justify-center text-[10px] font-bold">+12</div>
+</div>
+<div class="bg-surface-container-low p-4 rounded-xl">
+<div class="h-2 w-24 bg-outline-variant/30 rounded mb-2"></div>
+<div class="h-2 w-full bg-outline-variant/20 rounded"></div>
+</div>
+</div>
+</div>
+<!-- Notes Sharing System (Wide Card) -->
+<div class="md:col-span-12 bg-surface-container rounded-xl p-8 md:p-10 flex flex-col md:flex-row items-center gap-10 overflow-hidden relative">
+<div class="flex-1 space-y-4 z-10">
+<div class="w-12 h-12 rounded-xl bg-tertiary-fixed flex items-center justify-center text-on-tertiary-fixed">
+<span class="material-symbols-outlined" data-icon="share_reviews">share_reviews</span>
+</div>
+<h3 class="font-headline text-2xl font-bold">Notes Sharing System</h3>
+<p class="text-on-surface-variant leading-relaxed max-w-xl">
+                        A collaborative repository for LaTeX-formatted notes, CAD diagrams, and circuit schematics. Earn "Academic Karma" by contributing high-quality resources to the engineering library.
+                    </p>
+<button class="mt-4 px-6 py-2.5 engineered-gradient text-white font-semibold rounded-xl active:scale-95 transition-transform flex items-center gap-2">
+                        Get Early Access
+                        <span class="material-symbols-outlined text-[18px]" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+<div class="flex-1 w-full max-w-md">
+<div class="bg-surface-container-lowest rounded-xl shadow-2xl p-6 transform rotate-2 md:translate-x-12 translate-y-8">
+<div class="flex items-center gap-3 mb-4">
+<div class="w-8 h-8 rounded bg-blue-100 flex items-center justify-center text-blue-600">
+<span class="material-symbols-outlined text-[20px]" data-icon="functions">functions</span>
+</div>
+<div class="font-label text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Thermo_Dynamics_Ch4.pdf</div>
+</div>
+<div class="space-y-3">
+<div class="h-3 w-full bg-surface-container-low rounded"></div>
+<div class="h-3 w-5/6 bg-surface-container-low rounded"></div>
+<div class="h-3 w-full bg-surface-container-low rounded"></div>
+<div class="h-20 w-full bg-tertiary-fixed/10 rounded-lg flex items-center justify-center border border-dashed border-tertiary/20">
+<span class="text-tertiary text-[10px] font-mono">dQ = dU + dW</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Subtle background texture -->
+<div class="absolute inset-0 opacity-[0.03] pointer-events-none" style="background-image: radial-gradient(#191c1d 1px, transparent 1px); background-size: 24px 24px;"></div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-3 bg-white/90 backdrop-blur-lg shadow-[0_-4px_24px_rgba(0,0,0,0.04)] rounded-t-[1.5rem] md:hidden">
+<div class="flex flex-col items-center justify-center text-slate-400 px-5 py-1.5 active:scale-90 transition-transform duration-150">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-inter text-[10px] font-semibold uppercase tracking-widest mt-1">Dashboard</span>
+</div>
+<div class="flex flex-col items-center justify-center text-slate-400 px-5 py-1.5 active:scale-90 transition-transform duration-150">
+<span class="material-symbols-outlined" data-icon="auto_stories">auto_stories</span>
+<span class="font-inter text-[10px] font-semibold uppercase tracking-widest mt-1">Subjects</span>
+</div>
+<div class="flex flex-col items-center justify-center text-slate-400 px-5 py-1.5 active:scale-90 transition-transform duration-150">
+<span class="material-symbols-outlined" data-icon="event_note">event_note</span>
+<span class="font-inter text-[10px] font-semibold uppercase tracking-widest mt-1">Planner</span>
+</div>
+<div class="flex flex-col items-center justify-center bg-blue-50 text-blue-700 rounded-2xl px-5 py-1.5 active:scale-90 transition-transform duration-150">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-inter text-[10px] font-semibold uppercase tracking-widest mt-1">Account</span>
+</div>
+</nav>
+</body></html>

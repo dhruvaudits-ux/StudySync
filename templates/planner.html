@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block title %}Study Planner{% endblock %}
+
+{% block content %}
+<div class="space-y-12">
+    <!-- Header Section -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+        <div>
+            <h2 class="font-headline text-4xl font-extrabold text-slate-800 dark:text-white">Study Planner</h2>
+            <p class="text-slate-500 dark:text-slate-400 mt-2 text-lg">Organize your study goals, topics, and prioritize your learning.</p>
+        </div>
+        <div class="px-5 py-2.5 bg-white dark:bg-slate-800 rounded-2xl flex items-center gap-3 border border-slate-200 dark:border-slate-700 shadow-sm">
+            <span class="material-symbols-outlined text-primary dark:text-blue-400">event_note</span>
+            <span class="font-bold text-sm uppercase tracking-widest dark:text-slate-300">{{ tasks|length }} Tasks</span>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
+        <!-- Add Task Form -->
+        <div class="xl:col-span-1">
+            <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-slate-100 dark:border-slate-700 shadow-sm sticky top-24">
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="material-symbols-outlined text-primary dark:text-blue-400 text-2xl">add_task</span>
+                    <h3 class="text-xl font-bold font-headline text-slate-800 dark:text-white">New Task</h3>
+                </div>
+                
+                <form action="{{ url_for('add_planner_task') }}" method="POST" class="space-y-5">
+                    <div>
+                        <label for="subject" class="block text-sm font-bold text-slate-600 dark:text-slate-300 mb-2">Subject</label>
+                        <select name="subject" id="subject" required
+                                class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all dark:text-white">
+                            <option value="">Select Subject</option>
+                            {% for sub in subjects %}
+                            <option value="{{ sub.name }}">{{ sub.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label for="topic" class="block text-sm font-bold text-slate-600 dark:text-slate-300 mb-2">Topic</label>
+                        <input type="text" name="topic" id="topic" required placeholder="e.g. Chapter 3: Quantum Mechanics"
+                               class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all dark:text-white">
+                    </div>
+                    
+                    <div>
+                        <label for="priority" class="block text-sm font-bold text-slate-600 dark:text-slate-300 mb-2">Priority</label>
+                        <select name="priority" id="priority" required
+                                class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all dark:text-white">
+                            <option value="High">High</option>
+                            <option value="Medium" selected>Medium</option>
+                            <option value="Low">Low</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label for="notes" class="block text-sm font-bold text-slate-600 dark:text-slate-300 mb-2">Notes (Optional)</label>
+                        <textarea name="notes" id="notes" rows="3" placeholder="Additional details..."
+                                  class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all resize-none dark:text-white"></textarea>
+                    </div>
+                    
+                    <button type="submit" class="w-full bg-primary hover:bg-primary-dark text-white py-3 rounded-xl text-sm font-bold shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2">
+                        <span class="material-symbols-outlined text-lg">add</span>
+                        Add Task
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Tasks Grid -->
+        <div class="xl:col-span-2 space-y-4">
+            {% for task in tasks %}
+            <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm flex flex-col md:flex-row gap-4 items-start md:items-center transition-all hover:shadow-soft dark:hover:shadow-soft-dark cursor-pointer group hover:-translate-y-0.5">
+                
+                <!-- Status/Icon -->
+                <div class="flex-shrink-0">
+                    <form action="{{ url_for('toggle_planner_task', task_id=task.id) }}" method="POST">
+                        <button type="submit" class="w-12 h-12 rounded-xl flex items-center justify-center transition-all hover:scale-105 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2
+                            {% if task.status == 'Completed' %} bg-emerald-50 text-emerald-600 hover:bg-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-400 dark:hover:bg-emerald-500/20 {% else %} bg-slate-50 text-slate-400 hover:bg-slate-100 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600 {% endif %}"
+                            title="{% if task.status == 'Completed' %}Mark as Pending{% else %}Mark as Completed{% endif %}">
+                            <span class="material-symbols-outlined text-2xl">
+                                {% if task.status == 'Completed' %}check_circle{% else %}radio_button_unchecked{% endif %}
+                            </span>
+                        </button>
+                    </form>
+                </div>
+                
+                <!-- Content -->
+                <div class="flex-grow min-w-0">
+                    <div class="flex flex-wrap items-center gap-2 mb-1">
+                        <span class="text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">{{ task.subject }}</span>
+                        <!-- Priority Badge -->
+                        <span class="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wide border 
+                            {% if task.priority == 'High' %} bg-red-50 text-red-600 border-red-200 dark:bg-red-500/10 dark:text-red-400 dark:border-red-500/30
+                            {% elif task.priority == 'Medium' %} bg-amber-50 text-amber-600 border-amber-200 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/30
+                            {% else %} bg-emerald-50 text-emerald-600 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/30 {% endif %}">
+                            {{ task.priority }}
+                        </span>
+                    </div>
+                    <h4 class="text-lg font-bold font-headline text-slate-800 dark:text-white truncate {% if task.status == 'Completed' %}line-through opacity-70{% endif %}">
+                        {{ task.topic }}
+                    </h4>
+                    {% if task.notes %}
+                    <p class="text-sm text-slate-500 dark:text-slate-400 mt-1 line-clamp-2">{{ task.notes }}</p>
+                    {% endif %}
+                </div>
+                
+                <!-- Actions -->
+                <div class="flex-shrink-0 flex gap-2 md:opacity-0 group-hover:opacity-100 transition-opacity">
+                    <span class="text-xs font-bold text-slate-400 dark:text-slate-500 opacity-50 px-3 py-2">
+                        {{ task.created_at.strftime('%b %d') }}
+                    </span>
+                </div>
+            </div>
+            {% else %}
+            <!-- Empty State -->
+            <div class="py-16 text-center space-y-4 bg-white dark:bg-slate-800 rounded-3xl border-2 border-dashed border-slate-200 dark:border-slate-700 h-full flex flex-col items-center justify-center">
+                <span class="material-symbols-outlined text-6xl text-slate-300 dark:text-slate-600">event_available</span>
+                <p class="text-slate-500 dark:text-slate-300 font-medium text-lg">Your planner is clear.</p>
+                <p class="text-sm text-slate-400 dark:text-slate-500 max-w-sm mx-auto">Add a new task using the form to start tracking your study sessions.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

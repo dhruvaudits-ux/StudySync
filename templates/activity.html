@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+
+{% block title %}Activity Dashboard{% endblock %}
+
+{% block head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="space-y-12">
+    <!-- Header Section -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+        <div>
+            <h2 class="font-headline text-4xl font-extrabold text-slate-800 dark:text-white">Activity Analytics</h2>
+            <p class="text-slate-500 dark:text-slate-400 mt-2 text-lg">Track your study progress and visualize your consistency.</p>
+        </div>
+    </div>
+
+    <!-- Rating Scorecard -->
+    <div class="bg-white dark:bg-slate-800 p-8 rounded-[2rem] border border-slate-100 dark:border-slate-700 shadow-sm flex flex-col items-center justify-center text-center">
+        <h3 class="text-sm font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-6">Current Study Rating</h3>
+        <div class="flex items-center gap-6">
+            <span class="text-8xl">{{ rating_emoji }}</span>
+            <div class="text-left flex flex-col justify-center">
+                <div class="flex items-baseline gap-2">
+                    <span class="font-headline text-7xl font-extrabold text-primary dark:text-blue-400 leading-none">{{ rating_score }}</span>
+                    <span class="text-3xl font-bold text-slate-400 dark:text-slate-500">/ 10</span>
+                </div>
+                <p class="text-slate-600 dark:text-slate-300 font-medium mt-2">
+                    {% if rating_score >= 8 %} Outstanding consistency! You're crushing it.
+                    {% elif rating_score >= 5 %} Good progress. Keep this momentum going.
+                    {% elif rating_score >= 3 %} Satisfactory. Try to engage with more tasks.
+                    {% else %} Your pace is a bit slow. Let's pick up the focus!
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Grid -->
+    <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
+        
+        <!-- Bar Chart (Timeline) -->
+        <div class="bg-white dark:bg-slate-800 p-6 pt-5 rounded-3xl border border-slate-100 dark:border-slate-700 shadow-sm flex flex-col justify-between">
+            <div class="mb-4">
+                <h3 class="font-headline text-xl font-bold text-slate-800 dark:text-white flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary dark:text-blue-400">bar_chart</span>
+                    Activity Timeline
+                </h3>
+            </div>
+            <div class="relative w-full h-[300px]">
+                <canvas id="barChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Pie Chart (Distribution) -->
+        <div class="bg-white dark:bg-slate-800 p-6 pt-5 rounded-3xl border border-slate-100 dark:border-slate-700 shadow-sm flex flex-col justify-between">
+            <div class="mb-4">
+                <h3 class="font-headline text-xl font-bold text-slate-800 dark:text-white flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary dark:text-blue-400">pie_chart</span>
+                    Action Distribution
+                </h3>
+            </div>
+            <div class="relative w-full h-[300px] flex justify-center">
+                <canvas id="pieChart"></canvas>
+            </div>
+        </div>
+        
+    </div>
+</div>
+
+<!-- Embedded Javascript for Charts Engine -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Retrieve JSON data passed from Flask template
+        const barDataRaw = JSON.parse('{{ bar_data|safe }}');
+        const pieDataRaw = JSON.parse('{{ pie_data|safe }}');
+        
+        // Match Tailwind colors via checking if dark mode is active
+        const isDark = document.documentElement.classList.contains('dark');
+        Chart.defaults.color = isDark ? '#94a3b8' : '#64748b'; // slate-400 vs slate-500
+        Chart.defaults.borderColor = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
+        
+        const primaryColor = isDark ? 'rgba(96, 165, 250, 0.8)' : 'rgba(0, 93, 172, 0.8)'; // blue-400 vs text-primary
+        const secondaryColors = [
+            isDark ? 'rgba(96, 165, 250, 0.8)' : 'rgba(0, 93, 172, 0.8)',   // Primary
+            isDark ? 'rgba(147, 197, 253, 0.6)' : 'rgba(26, 115, 232, 0.6)', // Lighter
+            isDark ? 'rgba(52, 211, 153, 0.7)' : 'rgba(52, 168, 83, 0.7)',  // Green
+            isDark ? 'rgba(251, 191, 36, 0.7)' : 'rgba(251, 188, 4, 0.7)',  // Yellow
+            isDark ? 'rgba(248, 113, 113, 0.7)' : 'rgba(234, 67, 53, 0.7)',  // Red
+        ];
+
+        /* --- BAR CHART --- */
+        const barCtx = document.getElementById('barChart').getContext('2d');
+        
+        // Sort dates chronologically
+        const labelsBar = Object.keys(barDataRaw).sort();
+        const dataBar = labelsBar.map(date => barDataRaw[date]);
+        
+        new Chart(barCtx, {
+            type: 'bar',
+            data: {
+                labels: labelsBar,
+                datasets: [{
+                    label: 'Activities Completed',
+                    data: dataBar,
+                    backgroundColor: primaryColor,
+                    borderRadius: 6,
+                    barPercentage: 0.6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: { stepSize: 1 },
+                        border: { display: false }
+                    }
+                }
+            }
+        });
+
+        /* --- PIE CHART --- */
+        const pieCtx = document.getElementById('pieChart').getContext('2d');
+        
+        // Format action strings text beautifully (e.g. 'completed_task' -> 'Completed Task')
+        const labelsPie = Object.keys(pieDataRaw).map(key => {
+            return key.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+        });
+        const dataPie = Object.keys(pieDataRaw).map(key => pieDataRaw[key]);
+
+        new Chart(pieCtx, {
+            type: 'doughnut',
+            data: {
+                labels: labelsPie,
+                datasets: [{
+                    data: dataPie,
+                    backgroundColor: secondaryColors,
+                    borderWidth: 0,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '70%',
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: {
+                            usePointStyle: true,
+                            padding: 20,
+                            font: { family: "'Inter', sans-serif" }
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}
