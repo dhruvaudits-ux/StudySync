@@ -1,5 +1,6 @@
 import os
-from flask import Flask, render_template, url_for, redirect, flash, request
+from functools import wraps
+from flask import Flask, render_template, url_for, redirect, flash, request, abort
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
@@ -41,6 +42,16 @@ login_manager.init_app(app)
 def load_user(user_id):
     return User.query.get(int(user_id))
 
+
+def admin_required(f):
+    """Decorator: only allows access if current_user.role == 'admin'. Returns 403 otherwise."""
+    @wraps(f)
+    @login_required
+    def decorated_function(*args, **kwargs):
+        if current_user.role != 'admin':
+            abort(403)
+        return f(*args, **kwargs)
+    return decorated_function
 
 
 @app.context_processor
@@ -454,6 +465,13 @@ def mark_all_read():
 # without relying on the __main__ block (which is never reached under Gunicorn).
 with app.app_context():
     db.create_all()
+    # Safely add 'role' column to existing databases that predate this migration
+    from sqlalchemy import text
+    try:
+        db.session.execute(text("ALTER TABLE user ADD COLUMN role VARCHAR(20) NOT NULL DEFAULT 'student'"))
+        db.session.commit()
+    except Exception:
+        db.session.rollback()  # Column already exists — safe to ignore
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=5000, debug=True)

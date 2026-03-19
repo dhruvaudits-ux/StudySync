@@ -13,7 +13,9 @@ class User(db.Model, UserMixin):
     roll_number = db.Column(db.String(20))
     division = db.Column(db.String(10))
     profile_pic = db.Column(db.String(255), nullable=True)
-    
+    # Role: 'student' (default) or 'admin'
+    role = db.Column(db.String(20), nullable=False, default='student')
+
     # Relationship with Subject
     subjects = db.relationship('Subject', backref='owner', lazy=True)
     
