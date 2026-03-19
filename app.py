@@ -534,12 +534,13 @@ def forbidden(e):
 with app.app_context():
     db.create_all()
     # Safely add 'role' column to existing databases that predate this migration
+    # Note: "user" is a reserved keyword in PostgreSQL, so we quote it.
     from sqlalchemy import text
     try:
-        db.session.execute(text("ALTER TABLE user ADD COLUMN role VARCHAR(20) NOT NULL DEFAULT 'student'"))
+        db.session.execute(text('ALTER TABLE "user" ADD COLUMN role VARCHAR(20) NOT NULL DEFAULT \'student\''))
         db.session.commit()
     except Exception:
-        db.session.rollback()  # Column already exists — safe to ignore
+        db.session.rollback()  # Column already exists or table doesn't exist — safe to ignore
 
     # Initialize default admin if none exists
     admin_exists = User.query.filter_by(role='admin').first()
@@ -557,6 +558,8 @@ with app.app_context():
         except Exception as e:
             db.session.rollback()
             print(f"[Error] Failed to create default admin: {e}")
+    else:
+        print("[OK] Admin exists in database.")
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=5000, debug=True)
