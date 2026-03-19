@@ -131,13 +131,21 @@ def login():
         password = request.form.get('password')
         remember = True if request.form.get('remember') else False
 
+        print(f"[Login Attempt] Email: {email}")
         user = User.query.filter_by(email=email).first()
 
-        if not user or not check_password_hash(user.password, password):
+        if not user:
+            print(f"[Login] User not found: {email}")
+            flash('Please check your login details and try again.', 'error')
+            return redirect(url_for('login'))
+
+        if not check_password_hash(user.password, password):
+            print(f"[Login] Invalid password for: {email}")
             flash('Please check your login details and try again.', 'error')
             return redirect(url_for('login'))
 
         login_user(user, remember=remember)
+        print(f"[Login] Success: {email} (ID: {user.id}, Role: {user.role})")
         
         # Log activity
         activity = Activity(user_id=user.id, action='login')
