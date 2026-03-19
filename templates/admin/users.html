@@ -2,65 +2,91 @@
 {% block title %}Admin — Users{% endblock %}
 
 {% block content %}
-<div class="space-y-6">
+<div class="space-y-8">
 
-    <!-- Page Header -->
-    <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center text-primary">
-            <span class="material-symbols-outlined">manage_accounts</span>
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="space-y-3">
+          {% for category, message in messages %}
+            <div class="px-5 py-3 rounded-xl border {% if category == 'success' %}bg-emerald-50 border-emerald-100 text-emerald-700{% else %}bg-red-50 border-red-100 text-red-700{% endif %} font-medium text-sm flex items-center justify-between">
+              {{ message }}
+              <button onclick="this.parentElement.remove()" class="opacity-50 hover:opacity-100 transition-opacity">
+                <span class="material-symbols-outlined text-lg">close</span>
+              </button>
+            </div>
+          {% endfor %}
         </div>
-        <div>
-            <h1 class="text-2xl font-headline font-extrabold text-slate-800 dark:text-white">Users</h1>
-            <p class="text-sm text-slate-500 dark:text-slate-400">{{ users | length }} registered account{{ 's' if users | length != 1 }}</p>
+      {% endif %}
+    {% endwith %}
+
+    <!-- Hero Header -->
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div class="space-y-2">
+            <p class="text-primary font-bold tracking-[0.2em] text-[10px] uppercase">Directory</p>
+            <h1 class="text-3xl md:text-4xl font-extrabold text-slate-800 dark:text-white font-headline tracking-tight">Active Members</h1>
+            <p class="text-slate-500 dark:text-slate-400 max-w-lg text-sm">Manage permissions, oversee academic contributions, and monitor user statuses across the platform.</p>
+        </div>
+        <div class="flex items-center gap-3 shrink-0">
+            <span class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-sm font-semibold text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-800">
+                <span class="material-symbols-outlined text-lg">group</span>
+                {{ users | length }} Users
+            </span>
         </div>
     </div>
 
-    <!-- Users Table -->
-    <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/50 shadow-soft overflow-hidden">
+    <!-- Table Card -->
+    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-soft border border-slate-100 dark:border-slate-700/50 overflow-hidden">
         <div class="overflow-x-auto">
-            <table class="w-full text-sm">
+            <table class="w-full text-left border-collapse min-w-[700px]">
                 <thead>
-                    <tr class="border-b border-slate-100 dark:border-slate-700/50 bg-slate-50/70 dark:bg-slate-800/70">
-                        <th class="text-left px-6 py-4 font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-xs">#</th>
-                        <th class="text-left px-6 py-4 font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-xs">Name</th>
-                        <th class="text-left px-6 py-4 font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-xs">Email</th>
-                        <th class="text-left px-6 py-4 font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-xs">Roll No.</th>
-                        <th class="text-left px-6 py-4 font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-xs">Division</th>
-                        <th class="text-left px-6 py-4 font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-xs">Role</th>
+                    <tr class="bg-slate-50 dark:bg-slate-800/70 border-b border-slate-200 dark:border-slate-700/50">
+                        <th class="px-8 py-4 text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">User Profile</th>
+                        <th class="px-8 py-4 text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Roll / Division</th>
+                        <th class="px-8 py-4 text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Role</th>
+                        <th class="px-8 py-4 text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 text-right">Actions</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-50 dark:divide-slate-700/30">
+                <tbody class="divide-y divide-slate-100 dark:divide-slate-700/30">
                     {% for user in users %}
-                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors">
-                        <td class="px-6 py-4 text-slate-400 dark:text-slate-500 font-mono text-xs">{{ user.id }}</td>
-                        <td class="px-6 py-4">
-                            <div class="flex items-center gap-3">
-                                <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-primary to-blue-400 text-white flex items-center justify-center font-bold text-xs shrink-0">
+                    <tr class="hover:bg-blue-50/30 dark:hover:bg-slate-700/30 transition-colors group">
+                        <td class="px-8 py-4">
+                            <div class="flex items-center gap-4">
+                                <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-primary to-blue-400 text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-sm">
                                     {{ user.name[:1] | upper }}
                                 </div>
-                                <span class="font-semibold text-slate-700 dark:text-slate-200">{{ user.name }}</span>
+                                <div>
+                                    <p class="font-bold text-slate-800 dark:text-white text-sm group-hover:text-primary transition-colors">{{ user.name }}</p>
+                                    <p class="text-xs text-slate-400 dark:text-slate-500">{{ user.email }}</p>
+                                </div>
                             </div>
                         </td>
-                        <td class="px-6 py-4 text-slate-500 dark:text-slate-400">{{ user.email }}</td>
-                        <td class="px-6 py-4 text-slate-500 dark:text-slate-400 font-mono text-xs">{{ user.roll_number or '—' }}</td>
-                        <td class="px-6 py-4 text-slate-500 dark:text-slate-400">{{ user.division or '—' }}</td>
-                        <td class="px-6 py-4">
+                        <td class="px-8 py-4">
+                            <p class="text-sm font-mono text-slate-600 dark:text-slate-300">{{ user.roll_number or '—' }}</p>
+                            <p class="text-xs text-slate-400 dark:text-slate-500">Div {{ user.division or '—' }}</p>
+                        </td>
+                        <td class="px-8 py-4">
                             {% if user.role == 'admin' %}
-                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary/10 dark:bg-primary/20 text-primary dark:text-blue-400 font-bold text-xs">
-                                <span class="material-symbols-outlined text-sm" style="font-size:14px">shield</span>
-                                Admin
-                            </span>
+                            <span class="px-2.5 py-1 rounded-md bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 text-[10px] font-bold uppercase tracking-wide border border-purple-100 dark:border-purple-500/20">Admin</span>
                             {% else %}
-                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 font-bold text-xs">
-                                <span class="material-symbols-outlined text-sm" style="font-size:14px">person</span>
-                                Student
-                            </span>
+                            <span class="px-2.5 py-1 rounded-md bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 text-[10px] font-bold uppercase tracking-wide border border-blue-100 dark:border-blue-500/20">Student</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-8 py-4 text-right">
+                            {% if user.id != current_user.id %}
+                            <form action="{{ url_for('delete_user', user_id=user.id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this user? This will also remove all their tasks and activity history.')">
+                                <button type="submit" class="p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-500/10 text-slate-400 hover:text-red-500 transition-all" title="Delete User">
+                                    <span class="material-symbols-outlined text-xl">delete</span>
+                                </button>
+                            </form>
+                            {% else %}
+                            <span class="text-xs font-bold text-slate-300 dark:text-slate-600 italic">Self</span>
                             {% endif %}
                         </td>
                     </tr>
                     {% else %}
                     <tr>
-                        <td colspan="6" class="px-6 py-16 text-center text-slate-400 dark:text-slate-500">
+                        <td colspan="3" class="px-8 py-16 text-center text-slate-400 dark:text-slate-500">
                             <span class="material-symbols-outlined text-4xl block mb-2">group_off</span>
                             No users found.
                         </td>
@@ -68,6 +94,41 @@
                     {% endfor %}
                 </tbody>
             </table>
+        </div>
+
+        <!-- Footer -->
+        <div class="px-8 py-5 bg-slate-50 dark:bg-slate-800/70 border-t border-slate-100 dark:border-slate-700/50 flex items-center justify-between">
+            <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                Showing <span class="text-slate-800 dark:text-white font-bold">{{ users | length }}</span> registered user{{ 's' if users | length != 1 }}
+            </p>
+            <a href="{{ url_for('admin_dashboard') }}" class="text-xs font-bold text-primary dark:text-blue-400 hover:underline flex items-center gap-1">
+                Back to Dashboard
+                <span class="material-symbols-outlined text-sm">arrow_forward</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Stats Highlight -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-gradient-to-br from-primary to-blue-500 p-8 rounded-2xl text-white shadow-xl shadow-primary/20 flex flex-col justify-between h-40">
+            <div class="flex justify-between items-start">
+                <span class="material-symbols-outlined text-3xl opacity-50">trending_up</span>
+                <span class="bg-white/20 px-2 py-1 rounded text-[10px] font-bold">LIVE</span>
+            </div>
+            <div>
+                <p class="text-white/70 text-xs font-bold tracking-wider uppercase">Total Users</p>
+                <h4 class="text-4xl font-extrabold font-headline">{{ users | length }}</h4>
+            </div>
+        </div>
+        <div class="md:col-span-2 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700/50 p-8 rounded-2xl flex items-center justify-between shadow-soft">
+            <div class="space-y-2">
+                <p class="text-primary dark:text-blue-400 font-bold text-xs uppercase tracking-widest">Admin Actions</p>
+                <h4 class="text-2xl font-bold text-slate-800 dark:text-white font-headline">Promote a User to Admin</h4>
+                <p class="text-slate-500 dark:text-slate-400 text-sm max-w-sm">Run <code class="bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 rounded text-xs font-mono">python make_admin.py &lt;email&gt;</code> in the project terminal.</p>
+            </div>
+            <div class="w-14 h-14 rounded-2xl bg-slate-50 dark:bg-slate-700 border border-slate-100 dark:border-slate-600 flex items-center justify-center text-primary shrink-0">
+                <span class="material-symbols-outlined text-3xl">admin_panel_settings</span>
+            </div>
         </div>
     </div>
 

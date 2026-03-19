@@ -17,16 +17,16 @@ class User(db.Model, UserMixin):
     role = db.Column(db.String(20), nullable=False, default='student')
 
     # Relationship with Subject
-    subjects = db.relationship('Subject', backref='owner', lazy=True)
+    subjects = db.relationship('Subject', backref='owner', lazy=True, cascade="all, delete-orphan")
     
     # Relationship with UserPYQ
-    pyq_interactions = db.relationship('UserPYQ', backref='user', lazy=True)
+    pyq_interactions = db.relationship('UserPYQ', backref='user', lazy=True, cascade="all, delete-orphan")
     
     # Relationship with StudyPlanner
-    planner_tasks = db.relationship('StudyPlanner', backref='user', lazy=True)
+    planner_tasks = db.relationship('StudyPlanner', backref='user', lazy=True, cascade="all, delete-orphan")
     
     # Relationship with Activity
-    activities = db.relationship('Activity', backref='user', lazy=True)
+    activities = db.relationship('Activity', backref='user', lazy=True, cascade="all, delete-orphan")
 
     def __repr__(self):
         return f'<User {self.name}>'

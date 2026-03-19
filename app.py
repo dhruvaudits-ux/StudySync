@@ -501,6 +501,24 @@ def admin_settings():
     env = 'Production' if os.getenv('DATABASE_URL') else 'Development (SQLite)'
     return render_template('admin/settings.html', env=env)
 
+@app.route('/admin/users/delete/<int:user_id>', methods=['POST'])
+@admin_required
+def delete_user(user_id):
+    if user_id == current_user.id:
+        flash("You cannot delete your own account!", "danger")
+        return redirect(url_for('admin_users'))
+    
+    user = User.query.get_or_404(user_id)
+    try:
+        db.session.delete(user)
+        db.session.commit()
+        flash(f"User {user.name} deleted successfully.", "success")
+    except Exception as e:
+        db.session.rollback()
+        flash(f"Error deleting user: {str(e)}", "danger")
+        
+    return redirect(url_for('admin_users'))
+
 # ── Error Handlers ────────────────────────────────────────────────────────────
 
 @app.errorhandler(403)
