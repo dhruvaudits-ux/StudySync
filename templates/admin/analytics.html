@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}Admin — Analytics{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+
+    <!-- Page Header -->
+    <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-purple-100 dark:bg-purple-500/10 flex items-center justify-center text-purple-600 dark:text-purple-400">
+            <span class="material-symbols-outlined">bar_chart</span>
+        </div>
+        <div>
+            <h1 class="text-2xl font-headline font-extrabold text-slate-800 dark:text-white">Platform Analytics</h1>
+            <p class="text-sm text-slate-500 dark:text-slate-400">Activity breakdown across all users</p>
+        </div>
+    </div>
+
+    <!-- Summary Stats -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {% for action, count in activity_summary.items() %}
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-5 border border-slate-100 dark:border-slate-700/50 shadow-soft">
+            <p class="text-2xl font-headline font-extrabold text-slate-800 dark:text-white">{{ count }}</p>
+            <p class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mt-1">{{ action.replace('_', ' ').title() }}</p>
+        </div>
+        {% else %}
+        <div class="col-span-4 py-12 text-center text-slate-400 dark:text-slate-500">
+            <span class="material-symbols-outlined text-4xl block mb-2">analytics</span>
+            No activity data yet.
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Activity Breakdown Table -->
+    {% if activity_summary %}
+    <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/50 shadow-soft overflow-hidden">
+        <div class="p-5 border-b border-slate-100 dark:border-slate-700/50">
+            <h2 class="font-headline font-bold text-slate-800 dark:text-white text-lg">Action Breakdown</h2>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="bg-slate-50/70 dark:bg-slate-800/70 border-b border-slate-100 dark:border-slate-700/50">
+                        <th class="text-left px-6 py-4 font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-xs">Action</th>
+                        <th class="text-left px-6 py-4 font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-xs">Count</th>
+                        <th class="text-left px-6 py-4 font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-xs">Share</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-50 dark:divide-slate-700/30">
+                    {% set total = activity_summary.values() | sum %}
+                    {% for action, count in activity_summary.items() | sort(attribute='1', reverse=True) %}
+                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors">
+                        <td class="px-6 py-4 font-semibold text-slate-700 dark:text-slate-200">{{ action.replace('_', ' ').title() }}</td>
+                        <td class="px-6 py-4 text-slate-500 dark:text-slate-400 font-mono">{{ count }}</td>
+                        <td class="px-6 py-4">
+                            {% set pct = ((count / total) * 100) | round(1) %}
+                            <div class="flex items-center gap-3">
+                                <div class="flex-1 h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden max-w-[120px]">
+                                    <div class="h-full bg-primary rounded-full" style="width: {{ pct }}%"></div>
+                                </div>
+                                <span class="text-xs text-slate-400 dark:text-slate-500 font-bold">{{ pct }}%</span>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

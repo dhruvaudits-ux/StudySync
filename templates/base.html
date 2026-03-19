@@ -98,6 +98,21 @@
                     {{ label }}
                 </a>
             {% endfor %}
+
+            {% if current_user.is_authenticated and current_user.role == 'admin' %}
+            <div class="mt-2 pt-2 border-t border-slate-100 dark:border-slate-700/50">
+                <a href="{{ url_for('admin_dashboard') }}"
+                   class="flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all group
+                          {% if request.endpoint and request.endpoint.startswith('admin') %}
+                              bg-primary/10 dark:bg-primary/20 text-primary dark:text-blue-400 font-semibold shadow-sm
+                          {% else %}
+                              text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700/50 hover:text-slate-800 dark:hover:text-slate-200
+                          {% endif %}">
+                    <span class="material-symbols-outlined {% if request.endpoint and request.endpoint.startswith('admin') %}scale-110{% else %}opacity-70 group-hover:opacity-100{% endif %} transition-transform">admin_panel_settings</span>
+                    Admin Panel
+                </a>
+            </div>
+            {% endif %}
         </nav>
 
         <!-- Sidebar Footer / User Banner -->

@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>StudySync | PYQ &amp; Resource Management</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "tertiary-fixed-dim": "#ffb596",
+                        "on-error": "#ffffff",
+                        "on-secondary-fixed-variant": "#5a00c6",
+                        "error": "#ba1a1a",
+                        "surface-container-high": "#dce9ff",
+                        "on-surface": "#0b1c30",
+                        "tertiary": "#943700",
+                        "on-secondary-fixed": "#25005a",
+                        "on-secondary-container": "#fffbff",
+                        "inverse-surface": "#213145",
+                        "background": "#f8f9ff",
+                        "on-tertiary-fixed-variant": "#7d2d00",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "inverse-primary": "#b4c5ff",
+                        "on-primary-container": "#eeefff",
+                        "surface-container-highest": "#d3e4fe",
+                        "on-tertiary-fixed": "#360f00",
+                        "on-secondary": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-fixed": "#dbe1ff",
+                        "outline-variant": "#c3c6d7",
+                        "outline": "#737686",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "primary": "#004ac6",
+                        "secondary-container": "#8a4cfc",
+                        "surface-container": "#e5eeff",
+                        "on-primary": "#ffffff",
+                        "secondary-fixed-dim": "#d2bbff",
+                        "secondary": "#712ae2",
+                        "on-background": "#0b1c30",
+                        "surface-container-low": "#eff4ff",
+                        "on-primary-fixed": "#00174b",
+                        "surface-dim": "#cbdbf5",
+                        "tertiary-container": "#bc4800",
+                        "surface-variant": "#d3e4fe",
+                        "surface": "#f8f9ff",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-fixed": "#ffdbcd",
+                        "primary-container": "#2563eb",
+                        "inverse-on-surface": "#eaf1ff",
+                        "on-surface-variant": "#434655",
+                        "surface-tint": "#0053db",
+                        "surface-bright": "#f8f9ff",
+                        "secondary-fixed": "#eaddff",
+                        "error-container": "#ffdad6",
+                        "on-tertiary-container": "#ffede6",
+                        "on-error-container": "#93000a"
+                    },
+                    fontFamily: {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .tonal-lift {
+            background-color: var(--tw-surface-container-low);
+        }
+    </style>
+</head>
+<body class="bg-background font-body text-on-surface min-h-screen">
+<!-- NavigationDrawer (Fixed Shell) -->
+<aside class="h-screen w-72 fixed left-0 top-0 z-50 bg-slate-100 dark:bg-slate-800 flex flex-col py-8 no-border">
+<div class="px-8 mb-10 flex flex-col items-start">
+<div class="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white mb-4">
+<span class="material-symbols-outlined text-2xl" data-icon="library_books">library_books</span>
+</div>
+<h2 class="font-headline font-bold text-slate-900 dark:text-slate-100 text-lg leading-tight">Academic Curator</h2>
+<p class="text-xs font-medium text-slate-500 uppercase tracking-widest mt-1">Super Admin</p>
+</div>
+<nav class="flex-1 px-4 space-y-1">
+<a class="flex items-center px-4 py-3 text-slate-600 dark:text-slate-400 font-medium text-sm transition-all duration-300 hover:bg-slate-200 dark:hover:bg-slate-800 pl-4" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="dashboard">dashboard</span>
+            Dashboard
+        </a>
+<a class="flex items-center px-4 py-3 text-slate-600 dark:text-slate-400 font-medium text-sm transition-all duration-300 hover:bg-slate-200 dark:hover:bg-slate-800 pl-4" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="group">group</span>
+            Users
+        </a>
+<a class="flex items-center px-4 py-3 border-l-4 border-blue-600 text-blue-600 dark:text-blue-400 bg-blue-50/50 dark:bg-blue-900/20 font-medium text-sm transition-all duration-300" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="library_books">library_books</span>
+            PYQs &amp; Resources
+        </a>
+<a class="flex items-center px-4 py-3 text-slate-600 dark:text-slate-400 font-medium text-sm transition-all duration-300 hover:bg-slate-200 dark:hover:bg-slate-800 pl-4" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="analytics">analytics</span>
+            Analytics
+        </a>
+<a class="flex items-center px-4 py-3 text-slate-600 dark:text-slate-400 font-medium text-sm transition-all duration-300 hover:bg-slate-200 dark:hover:bg-slate-800 pl-4" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="settings">settings</span>
+            Settings
+        </a>
+</nav>
+<div class="px-6 mt-auto">
+<div class="p-4 rounded-xl bg-slate-200/50 dark:bg-slate-700/50">
+<p class="text-xs text-on-surface-variant font-bold uppercase tracking-wider mb-2">Storage Status</p>
+<div class="w-full bg-outline-variant/30 h-1.5 rounded-full mb-2">
+<div class="bg-primary h-1.5 rounded-full w-[65%] shadow-[0_0_8px_rgba(0,74,198,0.3)]"></div>
+</div>
+<p class="text-[10px] text-slate-500 font-semibold">6.5 GB of 10 GB used</p>
+</div>
+</div>
+</aside>
+<!-- Main Content Wrapper -->
+<div class="ml-72 min-h-screen flex flex-col">
+<!-- TopAppBar -->
+<header class="w-full sticky top-0 z-40 flex justify-between items-center px-6 py-4 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl shadow-[0_8px_32px_rgba(11,28,48,0.06)]">
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 p-2 rounded-full cursor-pointer active:scale-95 duration-200" data-icon="menu">menu</button>
+<h1 class="text-xl font-headline font-bold tracking-tight text-blue-700 dark:text-blue-400">StudySync</h1>
+</div>
+<div class="flex items-center gap-6">
+<div class="hidden md:flex items-center gap-4">
+<span class="text-blue-600 dark:text-blue-400 font-semibold text-sm">Resources</span>
+</div>
+<div class="flex items-center gap-3 pl-6 border-l border-slate-200 dark:border-slate-700">
+<div class="text-right hidden sm:block">
+<p class="text-sm font-bold text-on-surface leading-none font-headline">Admin Avatar</p>
+<p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider mt-1">System Administrator</p>
+</div>
+<div class="w-10 h-10 rounded-full border-2 border-white dark:border-slate-800 shadow-sm overflow-hidden cursor-pointer active:scale-95 duration-200">
+<img alt="Admin Avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBYzBl6H-xUN5u2jgSC_6vfdnDdeWNExxkKBhZuIgDmP4yAcgPH72PbPgzr4GsTxR0Qm1-moAiXFOro-nUdfpj6Q7APcYiISmwjysoUka483eJVkbpAXgj1T3PsofKZG5aiu0Q5jnxBpRxJf2zsbzG3LN6Q_01ySB9NcePDAH4bOdvuIO5aazSwzqFIAInFrf7FiMTUD3aduRg7cS4XdhSynKa_ghX8jQmsQOhM6PmIo-fqB-gGTdfTnnA17kZLf3d-3LoGfXRhsF8"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Page Canvas -->
+<main class="flex-1 p-8 md:p-12 space-y-12">
+<!-- Page Header -->
+<section class="flex flex-col md:flex-row md:items-end justify-between gap-8">
+<div class="max-w-3xl">
+<h2 class="text-4xl md:text-5xl font-headline font-extrabold text-on-surface leading-[1.1] tracking-tight">PYQ &amp; Resource Management</h2>
+<p class="text-lg text-on-surface-variant font-medium mt-4 leading-relaxed">Centralize past year questions and academic materials with precision tagging and secure cloud storage.</p>
+</div>
+<div class="flex items-center gap-3">
+<button class="bg-surface-container-high text-on-surface px-6 py-3 rounded-xl font-bold text-sm flex items-center gap-2 hover:bg-surface-container-highest transition-all shadow-sm active:scale-95">
+<span class="material-symbols-outlined text-lg" data-icon="filter_list">filter_list</span>
+                    Filter View
+                </button>
+</div>
+</section>
+<!-- Grid Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
+<!-- Upload Section (Left) -->
+<div class="lg:col-span-5 space-y-8">
+<div class="bg-surface-container-lowest rounded-2xl p-8 shadow-[0_4px_24px_rgba(0,0,0,0.04)] border border-outline-variant/20">
+<div class="flex items-center gap-4 mb-8">
+<div class="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+<span class="material-symbols-outlined font-bold" data-icon="upload_file">upload_file</span>
+</div>
+<h3 class="text-xl font-headline font-bold text-on-surface">Upload New Material</h3>
+</div>
+<form class="space-y-6">
+<!-- Subject Selection -->
+<div class="space-y-3">
+<label class="text-[11px] font-extrabold text-slate-500 uppercase tracking-widest flex items-center gap-2">
+<span class="material-symbols-outlined text-xs" data-icon="school">school</span>
+                                Target Subject
+                            </label>
+<div class="relative group">
+<select class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl px-5 py-3.5 text-on-surface font-semibold focus:ring-4 focus:ring-primary/10 focus:border-primary/50 focus:outline-none transition-all appearance-none cursor-pointer">
+<option>Select a subject</option>
+<option>Advanced Mathematics IV</option>
+<option>Data Structures &amp; Algorithms</option>
+<option>Quantum Physics II</option>
+<option>Environmental Science</option>
+<option>Software Engineering</option>
+</select>
+<div class="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+<span class="material-symbols-outlined text-xl" data-icon="unfold_more">unfold_more</span>
+</div>
+</div>
+</div>
+<!-- File Upload Area -->
+<div class="space-y-3">
+<label class="text-[11px] font-extrabold text-slate-500 uppercase tracking-widest flex items-center gap-2">
+<span class="material-symbols-outlined text-xs" data-icon="description">description</span>
+                                Resource File (PDF Only)
+                            </label>
+<div class="w-full h-44 border-2 border-dashed border-slate-200 rounded-2xl bg-slate-50/50 flex flex-col items-center justify-center cursor-pointer hover:bg-slate-50 hover:border-primary/40 transition-all group relative overflow-hidden">
+<div class="absolute inset-0 bg-primary/0 group-hover:bg-primary/[0.02] transition-colors"></div>
+<span class="material-symbols-outlined text-5xl text-slate-300 group-hover:text-primary transition-colors mb-3" data-icon="picture_as_pdf">picture_as_pdf</span>
+<p class="text-sm font-bold text-on-surface">Drag and drop resource here</p>
+<p class="text-[11px] text-slate-500 font-medium mt-1">Maximum file size: 25MB</p>
+</div>
+</div>
+<!-- Optional Answer Key -->
+<div class="p-4 rounded-xl bg-secondary-fixed/5 border border-secondary/10 flex items-center justify-between group transition-all hover:bg-secondary-fixed/10">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary" data-icon="fact_check">fact_check</span>
+<span class="text-sm font-semibold text-on-surface">Attach Answer Key?</span>
+</div>
+<button class="text-[11px] font-extrabold text-secondary uppercase tracking-wider hover:text-secondary-container transition-colors" type="button">Select File</button>
+</div>
+<!-- Submit Action -->
+<button class="w-full h-14 bg-gradient-to-r from-primary to-secondary text-white font-bold rounded-xl shadow-[0_8px_20px_rgba(0,74,198,0.25)] hover:shadow-[0_12px_28px_rgba(0,74,198,0.35)] transition-all flex items-center justify-center gap-3 text-lg active:scale-[0.98] group" type="submit">
+<span class="material-symbols-outlined group-hover:translate-y-[-2px] transition-transform" data-icon="publish">publish</span>
+                            Submit Resource
+                        </button>
+</form>
+</div>
+<!-- Informational Card -->
+<div class="bg-blue-50/50 border-l-4 border-primary rounded-xl p-5 shadow-sm">
+<h4 class="text-xs font-extrabold text-primary flex items-center gap-2 mb-2 uppercase tracking-widest">
+<span class="material-symbols-outlined text-sm" data-icon="info">info</span>
+                        Naming Convention
+                    </h4>
+<p class="text-xs text-slate-600 leading-relaxed font-medium">
+                        Ensure searchable metadata by following: <span class="bg-blue-100 text-primary px-1.5 py-0.5 rounded font-bold">[YEAR]_[SEM]_[CODE]</span>.
+                    </p>
+</div>
+</div>
+<!-- Recent Uploads List (Right) -->
+<div class="lg:col-span-7">
+<div class="bg-surface-container-lowest rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.04)] border border-outline-variant/20 overflow-hidden">
+<div class="px-8 py-7 border-b border-slate-100 flex items-center justify-between bg-slate-50/30">
+<div class="flex items-center gap-3">
+<h3 class="text-xl font-headline font-bold text-on-surface">Recent Resources</h3>
+</div>
+<div class="bg-white border border-slate-200 px-4 py-1.5 rounded-full text-[10px] font-extrabold text-slate-500 uppercase tracking-widest shadow-sm">
+                            48 Total Uploads
+                        </div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead class="bg-slate-50/50">
+<tr>
+<th class="px-8 py-4 text-[11px] font-extrabold text-slate-500 uppercase tracking-widest">Resource Details</th>
+<th class="px-6 py-4 text-[11px] font-extrabold text-slate-500 uppercase tracking-widest">Category</th>
+<th class="px-6 py-4 text-[11px] font-extrabold text-slate-500 uppercase tracking-widest">Date</th>
+<th class="px-8 py-4 text-right text-[11px] font-extrabold text-slate-500 uppercase tracking-widest">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100">
+<!-- Row 1 -->
+<tr class="hover:bg-blue-50/20 transition-colors group">
+<td class="px-8 py-6">
+<div class="flex items-center gap-4">
+<div class="w-11 h-11 rounded-lg bg-red-50 text-red-500 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined font-bold" data-icon="description">description</span>
+</div>
+<div class="min-w-0">
+<p class="text-sm font-bold text-on-surface leading-tight truncate">2023_S1_CS101_Final.pdf</p>
+<p class="text-[11px] text-slate-500 font-semibold mt-1 flex items-center gap-1.5">
+                                                    1.2 MB <span class="w-1 h-1 rounded-full bg-slate-300"></span> Question Paper
+                                                </p>
+</div>
+</div>
+</td>
+<td class="px-6 py-6">
+<span class="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-extrabold bg-blue-50 text-blue-700 uppercase tracking-wider">Computer Science</span>
+</td>
+<td class="px-6 py-6">
+<p class="text-xs font-semibold text-slate-600">Oct 12, 2023</p>
+</td>
+<td class="px-8 py-6 text-right">
+<div class="flex items-center justify-end gap-3">
+<button class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-primary hover:bg-primary/10 transition-all active:scale-90" title="View Resource">
+<span class="material-symbols-outlined text-xl" data-icon="visibility">visibility</span>
+</button>
+<button class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-error hover:bg-error/10 transition-all active:scale-90" title="Delete Resource">
+<span class="material-symbols-outlined text-xl" data-icon="delete">delete</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-blue-50/20 transition-colors group">
+<td class="px-8 py-6">
+<div class="flex items-center gap-4">
+<div class="w-11 h-11 rounded-lg bg-orange-50 text-orange-500 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined font-bold" data-icon="analytics">analytics</span>
+</div>
+<div class="min-w-0">
+<p class="text-sm font-bold text-on-surface leading-tight truncate">Calc_Integration_Summary.pdf</p>
+<p class="text-[11px] text-slate-500 font-semibold mt-1 flex items-center gap-1.5">
+                                                    4.5 MB <span class="w-1 h-1 rounded-full bg-slate-300"></span> Study Guide
+                                                </p>
+</div>
+</div>
+</td>
+<td class="px-6 py-6">
+<span class="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-extrabold bg-purple-50 text-purple-700 uppercase tracking-wider">Mathematics</span>
+</td>
+<td class="px-6 py-6">
+<p class="text-xs font-semibold text-slate-600">Oct 10, 2023</p>
+</td>
+<td class="px-8 py-6 text-right">
+<div class="flex items-center justify-end gap-3">
+<button class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-primary hover:bg-primary/10 transition-all active:scale-90">
+<span class="material-symbols-outlined text-xl" data-icon="visibility">visibility</span>
+</button>
+<button class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-error hover:bg-error/10 transition-all active:scale-90">
+<span class="material-symbols-outlined text-xl" data-icon="delete">delete</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-blue-50/20 transition-colors group">
+<td class="px-8 py-6">
+<div class="flex items-center gap-4">
+<div class="w-11 h-11 rounded-lg bg-green-50 text-green-600 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined font-bold" data-icon="task">task</span>
+</div>
+<div class="min-w-0">
+<p class="text-sm font-bold text-on-surface leading-tight truncate">Quantum_Theory_Answers.pdf</p>
+<p class="text-[11px] text-slate-500 font-semibold mt-1 flex items-center gap-1.5">
+                                                    0.8 MB <span class="w-1 h-1 rounded-full bg-slate-300"></span> Answer Key
+                                                </p>
+</div>
+</div>
+</td>
+<td class="px-6 py-6">
+<span class="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-extrabold bg-green-50 text-green-700 uppercase tracking-wider">Physics</span>
+</td>
+<td class="px-6 py-6">
+<p class="text-xs font-semibold text-slate-600">Oct 09, 2023</p>
+</td>
+<td class="px-8 py-6 text-right">
+<div class="flex items-center justify-end gap-3">
+<button class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-primary hover:bg-primary/10 transition-all active:scale-90">
+<span class="material-symbols-outlined text-xl" data-icon="visibility">visibility</span>
+</button>
+<button class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-error hover:bg-error/10 transition-all active:scale-90">
+<span class="material-symbols-outlined text-xl" data-icon="delete">delete</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-blue-50/20 transition-colors group">
+<td class="px-8 py-6">
+<div class="flex items-center gap-4">
+<div class="w-11 h-11 rounded-lg bg-blue-50 text-blue-500 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined font-bold" data-icon="article">article</span>
+</div>
+<div class="min-w-0">
+<p class="text-sm font-bold text-on-surface leading-tight truncate">SW_Design_Patterns_2022.pdf</p>
+<p class="text-[11px] text-slate-500 font-semibold mt-1 flex items-center gap-1.5">
+                                                    2.1 MB <span class="w-1 h-1 rounded-full bg-slate-300"></span> Question Paper
+                                                </p>
+</div>
+</div>
+</td>
+<td class="px-6 py-6">
+<span class="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-extrabold bg-blue-50 text-blue-700 uppercase tracking-wider">Software Eng.</span>
+</td>
+<td class="px-6 py-6">
+<p class="text-xs font-semibold text-slate-600">Oct 08, 2023</p>
+</td>
+<td class="px-8 py-6 text-right">
+<div class="flex items-center justify-end gap-3">
+<button class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-primary hover:bg-primary/10 transition-all active:scale-90">
+<span class="material-symbols-outlined text-xl" data-icon="visibility">visibility</span>
+</button>
+<button class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-error hover:bg-error/10 transition-all active:scale-90">
+<span class="material-symbols-outlined text-xl" data-icon="delete">delete</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination/Footer -->
+<div class="px-8 py-6 bg-slate-50/50 border-t border-slate-100 flex items-center justify-between">
+<p class="text-xs text-slate-500 font-bold italic tracking-wide">Showing 1-4 of 48 resources</p>
+<div class="flex gap-2">
+<button class="px-4 py-2 rounded-lg bg-white border border-slate-200 text-[10px] font-extrabold uppercase tracking-widest text-on-surface hover:bg-slate-50 hover:border-slate-300 transition-all shadow-sm active:scale-95">Prev</button>
+<button class="px-4 py-2 rounded-lg bg-white border border-slate-200 text-[10px] font-extrabold uppercase tracking-widest text-on-surface hover:bg-slate-50 hover:border-slate-300 transition-all shadow-sm active:scale-95">Next</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Management Summary / Stats Section -->
+<section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 pt-12 border-t border-slate-100">
+<div class="flex items-center gap-5 p-6 rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
+<div class="w-14 h-14 rounded-2xl bg-primary/5 text-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-3xl font-bold" data-icon="cloud_done">cloud_done</span>
+</div>
+<div>
+<p class="text-3xl font-black text-on-surface tracking-tight">99.9%</p>
+<p class="text-[10px] text-slate-400 font-extrabold uppercase tracking-widest mt-1">Uptime Stability</p>
+</div>
+</div>
+<div class="flex items-center gap-5 p-6 rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
+<div class="w-14 h-14 rounded-2xl bg-secondary/5 text-secondary flex items-center justify-center">
+<span class="material-symbols-outlined text-3xl font-bold" data-icon="security">security</span>
+</div>
+<div>
+<p class="text-3xl font-black text-on-surface tracking-tight">AES-256</p>
+<p class="text-[10px] text-slate-400 font-extrabold uppercase tracking-widest mt-1">Encryption Policy</p>
+</div>
+</div>
+<div class="flex items-center gap-5 p-6 rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
+<div class="w-14 h-14 rounded-2xl bg-slate-100 text-slate-700 flex items-center justify-center">
+<span class="material-symbols-outlined text-3xl font-bold" data-icon="history_edu">history_edu</span>
+</div>
+<div>
+<p class="text-3xl font-black text-on-surface tracking-tight">1.2k</p>
+<p class="text-[10px] text-slate-400 font-extrabold uppercase tracking-widest mt-1">Historical Papers</p>
+</div>
+</div>
+<div class="flex items-center gap-5 p-6 rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
+<div class="w-14 h-14 rounded-2xl bg-slate-100 text-slate-700 flex items-center justify-center">
+<span class="material-symbols-outlined text-3xl font-bold" data-icon="speed">speed</span>
+</div>
+<div>
+<p class="text-3xl font-black text-on-surface tracking-tight">&lt; 200ms</p>
+<p class="text-[10px] text-slate-400 font-extrabold uppercase tracking-widest mt-1">Retrieval Speed</p>
+</div>
+</div>
+</section>
+</main>
+</div>
+</body></html>

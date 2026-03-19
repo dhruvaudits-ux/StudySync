@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+
+    <!-- Page Header -->
+    <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center text-primary">
+            <span class="material-symbols-outlined">admin_panel_settings</span>
+        </div>
+        <div>
+            <h1 class="text-2xl font-headline font-extrabold text-slate-800 dark:text-white">Admin Dashboard</h1>
+            <p class="text-sm text-slate-500 dark:text-slate-400">Platform overview &amp; stats</p>
+        </div>
+    </div>
+
+    <!-- Stat Cards -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-5">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-100 dark:border-slate-700/50 shadow-soft flex flex-col gap-2">
+            <div class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-500/10 text-primary flex items-center justify-center mb-1">
+                <span class="material-symbols-outlined">group</span>
+            </div>
+            <p class="text-3xl font-headline font-extrabold text-slate-800 dark:text-white">{{ users_count }}</p>
+            <p class="text-sm font-semibold text-slate-500 dark:text-slate-400">Total Users</p>
+        </div>
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-100 dark:border-slate-700/50 shadow-soft flex flex-col gap-2">
+            <div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-1">
+                <span class="material-symbols-outlined">task_alt</span>
+            </div>
+            <p class="text-3xl font-headline font-extrabold text-slate-800 dark:text-white">{{ tasks_count }}</p>
+            <p class="text-sm font-semibold text-slate-500 dark:text-slate-400">Study Tasks</p>
+        </div>
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-100 dark:border-slate-700/50 shadow-soft flex flex-col gap-2">
+            <div class="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center mb-1">
+                <span class="material-symbols-outlined">description</span>
+            </div>
+            <p class="text-3xl font-headline font-extrabold text-slate-800 dark:text-white">{{ pyqs_count }}</p>
+            <p class="text-sm font-semibold text-slate-500 dark:text-slate-400">Question Papers</p>
+        </div>
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-100 dark:border-slate-700/50 shadow-soft flex flex-col gap-2">
+            <div class="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center mb-1">
+                <span class="material-symbols-outlined">insights</span>
+            </div>
+            <p class="text-3xl font-headline font-extrabold text-slate-800 dark:text-white">{{ activities_count }}</p>
+            <p class="text-sm font-semibold text-slate-500 dark:text-slate-400">Total Activities</p>
+        </div>
+    </div>
+
+    <!-- Admin Quick Nav -->
+    <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/50 shadow-soft overflow-hidden">
+        <div class="p-5 border-b border-slate-100 dark:border-slate-700/50">
+            <h2 class="font-headline font-bold text-slate-800 dark:text-white text-lg">Admin Sections</h2>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-slate-100 dark:divide-slate-700/50">
+            <a href="{{ url_for('admin_users') }}" class="flex items-center gap-4 p-5 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors group">
+                <span class="material-symbols-outlined text-primary opacity-70 group-hover:opacity-100 transition-opacity">manage_accounts</span>
+                <div>
+                    <p class="font-semibold text-slate-700 dark:text-slate-200 text-sm">Users</p>
+                    <p class="text-xs text-slate-400 dark:text-slate-500">Manage all users</p>
+                </div>
+            </a>
+            <a href="{{ url_for('admin_analytics') }}" class="flex items-center gap-4 p-5 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors group">
+                <span class="material-symbols-outlined text-purple-500 opacity-70 group-hover:opacity-100 transition-opacity">bar_chart</span>
+                <div>
+                    <p class="font-semibold text-slate-700 dark:text-slate-200 text-sm">Analytics</p>
+                    <p class="text-xs text-slate-400 dark:text-slate-500">Platform activity</p>
+                </div>
+            </a>
+            <a href="{{ url_for('admin_resources') }}" class="flex items-center gap-4 p-5 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors group">
+                <span class="material-symbols-outlined text-amber-500 opacity-70 group-hover:opacity-100 transition-opacity">folder_open</span>
+                <div>
+                    <p class="font-semibold text-slate-700 dark:text-slate-200 text-sm">Resources</p>
+                    <p class="text-xs text-slate-400 dark:text-slate-500">Upcoming features</p>
+                </div>
+            </a>
+            <a href="{{ url_for('admin_settings') }}" class="flex items-center gap-4 p-5 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors group">
+                <span class="material-symbols-outlined text-slate-500 opacity-70 group-hover:opacity-100 transition-opacity">settings</span>
+                <div>
+                    <p class="font-semibold text-slate-700 dark:text-slate-200 text-sm">Settings</p>
+                    <p class="text-xs text-slate-400 dark:text-slate-500">App configuration</p>
+                </div>
+            </a>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

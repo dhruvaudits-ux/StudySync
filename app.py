@@ -460,6 +460,53 @@ def mark_all_read():
     db.session.commit()
     return {'status': 'success'}
 
+# ── Admin Routes ──────────────────────────────────────────────────────────────
+
+@app.route('/admin')
+@admin_required
+def admin_dashboard():
+    users_count     = User.query.count()
+    tasks_count     = StudyPlanner.query.count()
+    pyqs_count      = PYQ.query.count()
+    activities_count = Activity.query.count()
+    return render_template('admin/dashboard.html',
+                           users_count=users_count,
+                           tasks_count=tasks_count,
+                           pyqs_count=pyqs_count,
+                           activities_count=activities_count)
+
+@app.route('/admin/users')
+@admin_required
+def admin_users():
+    users = User.query.order_by(User.id.asc()).all()
+    return render_template('admin/users.html', users=users)
+
+@app.route('/admin/analytics')
+@admin_required
+def admin_analytics():
+    activities = Activity.query.all()
+    activity_summary = {}
+    for act in activities:
+        activity_summary[act.action] = activity_summary.get(act.action, 0) + 1
+    return render_template('admin/analytics.html', activity_summary=activity_summary)
+
+@app.route('/admin/resources')
+@admin_required
+def admin_resources():
+    return render_template('admin/resources.html')
+
+@app.route('/admin/settings')
+@admin_required
+def admin_settings():
+    env = 'Production' if os.getenv('DATABASE_URL') else 'Development (SQLite)'
+    return render_template('admin/settings.html', env=env)
+
+# ── Error Handlers ────────────────────────────────────────────────────────────
+
+@app.errorhandler(403)
+def forbidden(e):
+    return render_template('errors/403.html'), 403
+
 # Initialize database tables on startup.
 # Running inside app_context() here ensures this works under Gunicorn/multi-worker environments
 # without relying on the __main__ block (which is never reached under Gunicorn).
