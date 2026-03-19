@@ -137,6 +137,9 @@ def login():
         db.session.add(activity)
         db.session.commit()
         
+        # Role-based redirection
+        if user.role == 'admin':
+            return redirect(url_for('admin_dashboard'))
         return redirect(url_for('dashboard'))
 
     return render_template('login.html')
@@ -537,6 +540,23 @@ with app.app_context():
         db.session.commit()
     except Exception:
         db.session.rollback()  # Column already exists — safe to ignore
+
+    # Initialize default admin if none exists
+    admin_exists = User.query.filter_by(role='admin').first()
+    if not admin_exists:
+        try:
+            default_admin = User(
+                name="Admin",
+                email="admin@studysync.com",
+                password=generate_password_hash("admin123"),
+                role="admin"
+            )
+            db.session.add(default_admin)
+            db.session.commit()
+            print("[OK] Default admin created: admin@studysync.com / admin123")
+        except Exception as e:
+            db.session.rollback()
+            print(f"[Error] Failed to create default admin: {e}")
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=5000, debug=True)
