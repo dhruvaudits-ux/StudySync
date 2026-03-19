@@ -14,22 +14,20 @@ load_dotenv()
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'default-secret-key')
 
-# Database configuration: enforce PostgreSQL via DATABASE_URL
+# Database configuration: use DATABASE_URL (PostgreSQL) if available, otherwise fallback to SQLite
 _database_url = os.getenv('DATABASE_URL')
 
-if not _database_url:
-    # Fail early if DATABASE_URL is missing to prevent accidental SQLite fallback
-    raise RuntimeError("DATABASE_URL environment variable is not set. Please check your .env file or Render settings.")
+if _database_url:
+    # Render/Heroku still issues postgres:// URIs; SQLAlchemy 1.4+ requires postgresql://
+    if _database_url.startswith('postgres://'):
+        _database_url = _database_url.replace('postgres://', 'postgresql://', 1)
+    app.config['SQLALCHEMY_DATABASE_URI'] = _database_url
+    print("Environment: Production (PostgreSQL)")
+else:
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///local.db'
+    print("Environment: Development (SQLite fallback)")
 
-# Render/Heroku still issues postgres:// URIs; SQLAlchemy 1.4+ requires postgresql://
-if _database_url.startswith('postgres://'):
-    _database_url = _database_url.replace('postgres://', 'postgresql://', 1)
-
-app.config['SQLALCHEMY_DATABASE_URI'] = _database_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-# Debug print (sanitized for production)
-print(f"Connected DB: {_database_url.split('@')[-1] if '@' in _database_url else 'PostgreSQL'}")
 
 # Setup Image Uploads
 UPLOAD_FOLDER = os.path.join('static', 'uploads', 'profile_pics')
