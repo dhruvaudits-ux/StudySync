@@ -81,9 +81,11 @@
             {% set nav_items = [
                 ('dashboard', 'space_dashboard', 'Dashboard'),
                 ('subjects', 'auto_stories', 'Subjects'),
+                ('resources', 'folder_open', 'Resources'),
                 ('pyqs', 'description', 'Question Papers'),
                 ('planner', 'event_note', 'Study Planner'),
-                ('activity', 'insights', 'Activity & Analytics')
+                ('activity', 'insights', 'Activity & Analytics'),
+                ('attendance', 'co_present', 'Attendance')
             ] %}
             
             {% for endpoint, icon, label in nav_items %}
@@ -99,29 +101,19 @@
                 </a>
             {% endfor %}
 
-            {% if current_user.is_authenticated and current_user.role == 'admin' %}
-            <div class="mt-2 pt-2 border-t border-slate-100 dark:border-slate-700/50">
-                <a href="{{ url_for('admin_dashboard') }}"
-                   class="flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all group
-                          {% if request.endpoint and request.endpoint.startswith('admin') %}
-                              bg-primary/10 dark:bg-primary/20 text-primary dark:text-blue-400 font-semibold shadow-sm
-                          {% else %}
-                              text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700/50 hover:text-slate-800 dark:hover:text-slate-200
-                          {% endif %}">
-                    <span class="material-symbols-outlined {% if request.endpoint and request.endpoint.startswith('admin') %}scale-110{% else %}opacity-70 group-hover:opacity-100{% endif %} transition-transform">admin_panel_settings</span>
-                    Admin Panel
-                </a>
-            </div>
-            {% endif %}
         </nav>
 
         <!-- Sidebar Footer / User Banner -->
         {% if current_user.is_authenticated %}
         <div class="p-4 border-t border-slate-100 dark:border-slate-700/50 bg-slate-50/50 dark:bg-slate-800/50">
             <div class="flex items-center gap-3 w-full">
-                <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-primary to-blue-400 text-white flex items-center justify-center font-bold shadow-md shrink-0">
-                    {{ current_user.name[:1] | upper }}
+                {% if current_user.profile_pic and current_user.profile_pic != 'default.png' %}
+                <img src="{{ url_for('static', filename='uploads/' + current_user.profile_pic) }}" alt="Avatar" class="w-10 h-10 rounded-full object-cover shadow-md shrink-0">
+                {% else %}
+                <div class="w-10 h-10 avatar-fallback text-lg shadow-md shrink-0">
+                    {{ (current_user.name or current_user.email)[:1] | upper }}
                 </div>
+                {% endif %}
                 <div class="flex-1 min-w-0">
                     <p class="text-sm font-bold text-slate-800 dark:text-slate-200 truncate">{{ current_user.name }}</p>
                     <p class="text-xs text-slate-500 dark:text-slate-400 truncate">{{ current_user.email }}</p>
@@ -235,11 +227,11 @@
                 {% if current_user.is_authenticated %}
                 <div class="relative ml-2" id="profileDropdownWrapper">
                     <button onclick="toggleProfileDropdown()" class="w-10 h-10 rounded-full border-2 border-slate-200 dark:border-slate-700 hover:border-primary dark:hover:border-blue-400 focus:outline-none overflow-hidden transition-all shadow-sm group bg-slate-50 dark:bg-slate-700">
-                        {% if current_user.profile_pic %}
-                            <img src="{{ url_for('static', filename=current_user.profile_pic) }}" alt="Avatar" class="w-full h-full object-cover group-hover:scale-105 transition-transform">
+                        {% if current_user.profile_pic and current_user.profile_pic != 'default.png' %}
+                            <img src="{{ url_for('static', filename='uploads/' + current_user.profile_pic) }}" alt="Avatar" class="w-full h-full object-cover group-hover:scale-105 transition-transform">
                         {% else %}
-                            <div class="w-full h-full bg-gradient-to-tr from-primary to-blue-400 text-white flex items-center justify-center font-bold text-lg pb-0.5">
-                                {{ current_user.name[:1] | upper }}
+                            <div class="w-full h-full avatar-fallback text-lg">
+                                {{ (current_user.name or current_user.email)[:1] | upper }}
                             </div>
                         {% endif %}
                     </button>
@@ -248,11 +240,11 @@
                     <div id="profileDropdown" class="absolute right-0 mt-3 w-64 bg-white dark:bg-slate-800 rounded-2xl shadow-xl dark:shadow-soft-dark border border-slate-100 dark:border-slate-700/80 transform opacity-0 scale-95 pointer-events-none transition-all duration-200 origin-top-right z-50 overflow-hidden">
                         <div class="p-5 border-b border-slate-100 dark:border-slate-700/50 bg-slate-50/50 dark:bg-slate-800/50 flex items-center gap-3">
                             <div class="w-10 h-10 rounded-full border border-slate-200 dark:border-slate-700 overflow-hidden shrink-0">
-                                {% if current_user.profile_pic %}
-                                    <img src="{{ url_for('static', filename=current_user.profile_pic) }}" alt="Avatar" class="w-full h-full object-cover">
+                                {% if current_user.profile_pic and current_user.profile_pic != 'default.png' %}
+                                    <img src="{{ url_for('static', filename='uploads/' + current_user.profile_pic) }}" alt="Avatar" class="w-full h-full object-cover">
                                 {% else %}
-                                    <div class="w-full h-full bg-gradient-to-tr from-primary to-blue-400 text-white flex items-center justify-center font-bold text-lg pb-0.5">
-                                        {{ current_user.name[:1] | upper }}
+                                    <div class="w-full h-full avatar-fallback text-lg">
+                                        {{ (current_user.name or current_user.email)[:1] | upper }}
                                     </div>
                                 {% endif %}
                             </div>

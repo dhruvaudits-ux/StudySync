@@ -1,152 +1,72 @@
-{% extends "base.html" %}
-{% block title %}Admin Dashboard{% endblock %}
+{% extends "admin/base_admin.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block header_title %}System Overview{% endblock %}
 
 {% block content %}
-<div class="space-y-8">
-
-    <!-- Stats Bento Grid -->
-    <section class="grid grid-cols-2 lg:grid-cols-4 gap-5">
-        <!-- Users Card -->
-        <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-soft border border-slate-100 dark:border-slate-700/50 flex flex-col gap-3 hover:-translate-y-1 transition-transform duration-200">
-            <div class="flex justify-between items-start">
-                <div class="w-12 h-12 rounded-xl bg-primary/10 dark:bg-primary/20 text-primary flex items-center justify-center">
-                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">group</span>
+<div class="space-y-10">
+    <!-- Highlight Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <!-- Card 1: Total Users -->
+        <div class="bg-white dark:bg-slate-800 p-10 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm transition-transform hover:scale-[1.01]">
+            <div class="flex items-center gap-6">
+                <div class="w-16 h-16 rounded-2xl bg-blue-50 dark:bg-blue-900/20 text-blue-600 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-3xl">group</span>
                 </div>
-                <span class="text-[10px] font-extrabold text-emerald-700 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-500/10 px-2 py-1 rounded-lg uppercase tracking-wider">Live</span>
-            </div>
-            <div>
-                <p class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1">Total Users</p>
-                <h3 class="text-3xl font-bold font-headline text-slate-800 dark:text-white">{{ users_count }}</h3>
-            </div>
-        </div>
-        <!-- Tasks Card -->
-        <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-soft border border-slate-100 dark:border-slate-700/50 flex flex-col gap-3 hover:-translate-y-1 transition-transform duration-200">
-            <div class="flex justify-between items-start">
-                <div class="w-12 h-12 rounded-xl bg-emerald-100 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
-                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">task_alt</span>
-                </div>
-            </div>
-            <div>
-                <p class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1">Study Tasks</p>
-                <h3 class="text-3xl font-bold font-headline text-slate-800 dark:text-white">{{ tasks_count }}</h3>
-            </div>
-        </div>
-        <!-- PYQs Card -->
-        <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-soft border border-slate-100 dark:border-slate-700/50 flex flex-col gap-3 hover:-translate-y-1 transition-transform duration-200">
-            <div class="flex justify-between items-start">
-                <div class="w-12 h-12 rounded-xl bg-amber-100 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center">
-                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">description</span>
-                </div>
-            </div>
-            <div>
-                <p class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1">Question Papers</p>
-                <h3 class="text-3xl font-bold font-headline text-slate-800 dark:text-white">{{ pyqs_count }}</h3>
-            </div>
-        </div>
-        <!-- Activities Card -->
-        <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-soft border border-slate-100 dark:border-slate-700/50 flex flex-col gap-3 hover:-translate-y-1 transition-transform duration-200">
-            <div class="flex justify-between items-start">
-                <div class="w-12 h-12 rounded-xl bg-purple-100 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center">
-                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">insights</span>
-                </div>
-            </div>
-            <div>
-                <p class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1">Total Activities</p>
-                <h3 class="text-3xl font-bold font-headline text-slate-800 dark:text-white">{{ activities_count }}</h3>
-            </div>
-        </div>
-    </section>
-
-    <!-- Quick Nav + Activity Stream Grid -->
-    <section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-
-        <!-- Admin Quick Nav (4 cols) -->
-        <div class="lg:col-span-4 bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/50 shadow-soft overflow-hidden flex flex-col">
-            <div class="p-5 border-b border-slate-100 dark:border-slate-700/50">
-                <h2 class="font-headline font-bold text-slate-800 dark:text-white">Admin Sections</h2>
-            </div>
-            <nav class="flex-1 p-3 flex flex-col gap-1">
-                <a href="{{ url_for('admin_users') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors group">
-                    <span class="material-symbols-outlined text-primary opacity-70 group-hover:opacity-100">manage_accounts</span>
-                    <div>
-                        <p class="font-semibold text-slate-700 dark:text-slate-200 text-sm">Users</p>
-                        <p class="text-xs text-slate-400 dark:text-slate-500">{{ users_count }} registered</p>
-                    </div>
-                    <span class="material-symbols-outlined text-slate-300 dark:text-slate-600 ml-auto text-lg">chevron_right</span>
-                </a>
-                <a href="{{ url_for('admin_analytics') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors group">
-                    <span class="material-symbols-outlined text-purple-500 opacity-70 group-hover:opacity-100">bar_chart</span>
-                    <div>
-                        <p class="font-semibold text-slate-700 dark:text-slate-200 text-sm">Analytics</p>
-                        <p class="text-xs text-slate-400 dark:text-slate-500">{{ activities_count }} actions logged</p>
-                    </div>
-                    <span class="material-symbols-outlined text-slate-300 dark:text-slate-600 ml-auto text-lg">chevron_right</span>
-                </a>
-                <a href="{{ url_for('admin_resources') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors group">
-                    <span class="material-symbols-outlined text-amber-500 opacity-70 group-hover:opacity-100">folder_open</span>
-                    <div>
-                        <p class="font-semibold text-slate-700 dark:text-slate-200 text-sm">Resources</p>
-                        <p class="text-xs text-slate-400 dark:text-slate-500">Upcoming features</p>
-                    </div>
-                    <span class="material-symbols-outlined text-slate-300 dark:text-slate-600 ml-auto text-lg">chevron_right</span>
-                </a>
-                <a href="{{ url_for('admin_settings') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors group">
-                    <span class="material-symbols-outlined text-slate-500 opacity-70 group-hover:opacity-100">settings</span>
-                    <div>
-                        <p class="font-semibold text-slate-700 dark:text-slate-200 text-sm">Settings</p>
-                        <p class="text-xs text-slate-400 dark:text-slate-500">App configuration</p>
-                    </div>
-                    <span class="material-symbols-outlined text-slate-300 dark:text-slate-600 ml-auto text-lg">chevron_right</span>
-                </a>
-            </nav>
-        </div>
-
-        <!-- Intelligence Stream (8 cols) -->
-        <div class="lg:col-span-8 bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/50 shadow-soft overflow-hidden">
-            <div class="p-6 border-b border-slate-100 dark:border-slate-700/50 flex items-center justify-between">
                 <div>
-                    <h2 class="text-lg font-extrabold font-headline text-slate-800 dark:text-white">Intelligence Stream</h2>
-                    <p class="text-slate-500 dark:text-slate-400 text-sm mt-0.5">Real-time platform interactions</p>
-                </div>
-                <a href="{{ url_for('admin_analytics') }}" class="text-primary dark:text-blue-400 font-bold text-sm flex items-center gap-1 hover:gap-2 transition-all">
-                    Full Analytics <span class="material-symbols-outlined text-sm">arrow_forward</span>
-                </a>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 p-6">
-                <div class="bg-slate-50 dark:bg-slate-700/50 p-5 rounded-2xl flex items-start gap-4 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
-                    <div class="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-500/10 flex items-center justify-center shrink-0">
-                        <span class="material-symbols-outlined text-blue-600 dark:text-blue-400 text-lg">group</span>
-                    </div>
-                    <div>
-                        <p class="text-sm font-bold text-slate-800 dark:text-white">Users</p>
-                        <p class="text-2xl font-extrabold text-primary dark:text-blue-400 font-headline">{{ users_count }}</p>
-                        <p class="text-xs text-slate-400 dark:text-slate-500 mt-1">registered accounts</p>
-                    </div>
-                </div>
-                <div class="bg-slate-50 dark:bg-slate-700/50 p-5 rounded-2xl flex items-start gap-4 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
-                    <div class="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-500/10 flex items-center justify-center shrink-0">
-                        <span class="material-symbols-outlined text-emerald-600 dark:text-emerald-400 text-lg">check_circle</span>
-                    </div>
-                    <div>
-                        <p class="text-sm font-bold text-slate-800 dark:text-white">Tasks Done</p>
-                        <p class="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400 font-headline">{{ tasks_count }}</p>
-                        <p class="text-xs text-slate-400 dark:text-slate-500 mt-1">planner tasks</p>
-                    </div>
-                </div>
-                <div class="bg-slate-50 dark:bg-slate-700/50 p-5 rounded-2xl flex items-start gap-4 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
-                    <div class="w-10 h-10 rounded-xl bg-purple-100 dark:bg-purple-500/10 flex items-center justify-center shrink-0">
-                        <span class="material-symbols-outlined text-purple-600 dark:text-purple-400 text-lg">insights</span>
-                    </div>
-                    <div>
-                        <p class="text-sm font-bold text-slate-800 dark:text-white">Activities</p>
-                        <p class="text-2xl font-extrabold text-purple-600 dark:text-purple-400 font-headline">{{ activities_count }}</p>
-                        <p class="text-xs text-slate-400 dark:text-slate-500 mt-1">total events logged</p>
-                    </div>
+                    <h2 class="text-4xl font-black text-slate-900 dark:text-white">{{ users_count }}</h2>
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Total Registered Users</p>
                 </div>
             </div>
         </div>
 
-    </section>
+        <!-- Card 2: Total Students -->
+        <div class="bg-white dark:bg-slate-800 p-10 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm transition-transform hover:scale-[1.01]">
+            <div class="flex items-center gap-6">
+                <div class="w-16 h-16 rounded-2xl bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-3xl">school</span>
+                </div>
+                <div>
+                    <h2 class="text-4xl font-black text-slate-900 dark:text-white">{{ students_count }}</h2>
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Enrolled Students</p>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <!-- Quick Access Actions -->
+    <div class="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+        <div class="p-8 border-b border-slate-50 dark:border-slate-700 bg-slate-50/30">
+            <h3 class="font-black text-slate-900 dark:text-white tracking-tight">Administrative Controls</h3>
+        </div>
+        <div class="p-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+            <a href="{{ url_for('admin_users') }}" class="group p-6 rounded-2xl border border-slate-100 dark:border-slate-700 hover:border-blue-400 transition-all flex items-center gap-5">
+                <div class="w-12 h-12 rounded-xl bg-slate-50 dark:bg-slate-900 flex items-center justify-center text-slate-400 group-hover:text-blue-500">
+                    <span class="material-symbols-outlined">manage_accounts</span>
+                </div>
+                <div>
+                    <h4 class="font-bold text-slate-900 dark:text-white">User Management</h4>
+                    <p class="text-xs text-slate-500">View and modify user roles</p>
+                </div>
+            </a>
+            <a href="{{ url_for('admin_attendance') }}" class="group p-6 rounded-2xl border border-slate-100 dark:border-slate-700 hover:border-indigo-400 transition-all flex items-center gap-5">
+                <div class="w-12 h-12 rounded-xl bg-slate-50 dark:bg-slate-900 flex items-center justify-center text-slate-400 group-hover:text-indigo-500">
+                    <span class="material-symbols-outlined">event_note</span>
+                </div>
+                <div>
+                    <h4 class="font-bold text-slate-900 dark:text-white">Attendance Control</h4>
+                    <p class="text-xs text-slate-500">Mark student attendance logs</p>
+                </div>
+            </a>
+            <a href="{{ url_for('admin_upload') }}" class="group p-6 rounded-2xl border border-slate-100 dark:border-slate-700 hover:border-emerald-400 transition-all flex items-center gap-5">
+                <div class="w-12 h-12 rounded-xl bg-slate-50 dark:bg-slate-900 flex items-center justify-center text-slate-400 group-hover:text-emerald-500">
+                    <span class="material-symbols-outlined">upload_file</span>
+                </div>
+                <div>
+                    <h4 class="font-bold text-slate-900 dark:text-white">Upload PDF</h4>
+                    <p class="text-xs text-slate-500">Add new academic resources</p>
+                </div>
+            </a>
+        </div>
+    </div>
 </div>
 {% endblock %}

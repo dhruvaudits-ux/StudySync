@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}My Attendance{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Summary Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700/50">
+            <h3 class="text-slate-500 dark:text-slate-400 font-bold mb-1">Overall Attendance</h3>
+            <div class="flex items-baseline gap-2">
+                <span class="text-4xl font-extrabold {% if overall_percentage >= 75 %}text-emerald-500{% else %}text-red-500{% endif %}">{{ overall_percentage }}%</span>
+                <span class="text-sm text-slate-400 font-semibold">{{ present_classes }} / {{ total_classes }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Subject Wise Stats -->
+    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700/50 overflow-hidden">
+        <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-700/50">
+            <h2 class="font-bold text-slate-800 dark:text-white">Subject-wise Attendance</h2>
+        </div>
+        <div class="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {% for subject, stats in subject_stats.items() %}
+            <div class="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 p-4 rounded-xl">
+                <div class="flex justify-between items-center mb-2">
+                    <h4 class="font-bold text-slate-800 dark:text-slate-200">{{ subject }}</h4>
+                    <span class="px-2 py-1 text-xs font-bold rounded-md {% if stats.percentage >= 75 %}bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-400{% else %}bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-400{% endif %}">
+                        {{ stats.percentage }}%
+                    </span>
+                </div>
+                <p class="text-sm text-slate-500">{{ stats.present }} / {{ stats.total }} classes attended</p>
+                <div class="w-full bg-slate-200 dark:bg-slate-700 h-2 mt-3 rounded-full overflow-hidden">
+                    <div class="h-full {% if stats.percentage >= 75 %}bg-emerald-500{% else %}bg-red-500{% endif %}" style="width: {{ stats.percentage }}%"></div>
+                </div>
+            </div>
+            {% else %}
+            <p class="text-slate-500">No attendance records found yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Recent Records Log -->
+    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700/50 overflow-hidden">
+        <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-700/50">
+            <h2 class="font-bold text-slate-800 dark:text-white">Recent Records</h2>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-slate-50/50 dark:bg-slate-900/50 text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider">
+                        <th class="px-6 py-3 font-bold">Date</th>
+                        <th class="px-6 py-3 font-bold">Lecture</th>
+                        <th class="px-6 py-3 font-bold">Subject</th>
+                        <th class="px-6 py-3 font-bold">Status</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 dark:divide-slate-700/50">
+                    {% for record in records[:10] %}
+                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/30">
+                        <td class="px-6 py-3 text-slate-700 dark:text-slate-300">{{ record.date.strftime('%Y-%m-%d') }}</td>
+                        <td class="px-6 py-3 text-slate-700 dark:text-slate-300">{{ record.lecture }}</td>
+                        <td class="px-6 py-3 font-medium text-slate-800 dark:text-slate-200">{{ record.subject }}</td>
+                        <td class="px-6 py-3">
+                            {% if record.status == 'Present' %}
+                            <span class="text-emerald-600 dark:text-emerald-400 font-bold text-sm">Present</span>
+                            {% else %}
+                            <span class="text-red-600 dark:text-red-400 font-bold text-sm">Absent</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4" class="px-6 py-8 text-center text-slate-500 dark:text-slate-400">No recently logged lectures.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

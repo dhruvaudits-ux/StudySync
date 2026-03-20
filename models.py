@@ -12,7 +12,7 @@ class User(db.Model, UserMixin):
     phone = db.Column(db.String(20))
     roll_number = db.Column(db.String(20))
     division = db.Column(db.String(10))
-    profile_pic = db.Column(db.String(255), nullable=True)
+    profile_pic = db.Column(db.String(255), nullable=True, default='default.png')
     # Role: 'student' (default) or 'admin'
     role = db.Column(db.String(20), nullable=False, default='student')
 
@@ -27,6 +27,9 @@ class User(db.Model, UserMixin):
     
     # Relationship with Activity
     activities = db.relationship('Activity', backref='user', lazy=True, cascade="all, delete-orphan")
+
+    # Relationship with Attendance
+    attendances = db.relationship('Attendance', backref='student', lazy=True, cascade="all, delete-orphan")
 
     def __repr__(self):
         return f'<User {self.name}>'
@@ -81,3 +84,24 @@ class Activity(db.Model):
 
     def __repr__(self):
         return f'<Activity {self.user_id} - {self.action}>'
+
+class Attendance(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    student_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    date = db.Column(db.Date, nullable=False)
+    lecture = db.Column(db.Integer, nullable=False)
+    subject = db.Column(db.String(100), nullable=False)
+    status = db.Column(db.String(20), nullable=False) # 'Present' or 'Absent'
+
+    def __repr__(self):
+        return f'<Attendance {self.student_id} - {self.date} - L{self.lecture}: {self.status}>'
+class Resource(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(200), nullable=False)
+    subject = db.Column(db.String(100), nullable=False)
+    type = db.Column(db.String(50), nullable=False) # PYQ / CCA / Syllabus
+    filename = db.Column(db.String(255), nullable=False)
+    upload_date = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def __repr__(self):
+        return f'<Resource {self.title}>'

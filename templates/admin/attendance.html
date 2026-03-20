@@ -1,0 +1,81 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Attendance{% endblock %}
+{% block header_title %}Attendance Control{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Filter Section -->
+    <div class="bg-white dark:bg-slate-800 p-8 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm">
+        <form method="GET" action="{{ url_for('admin_attendance') }}" class="grid grid-cols-1 md:grid-cols-4 gap-6 items-end">
+            <div>
+                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Division</label>
+                <select name="division" class="w-full h-12 px-4 rounded-xl border border-slate-200 dark:border-slate-700 dark:bg-slate-900 text-sm focus:ring-2 focus:ring-blue-500/20" onchange="this.form.submit()">
+                    <option value="">Select</option>
+                    {% for div in divisions %}
+                    <option value="{{ div }}" {% if div == selected_division %}selected{% endif %}>{{ div }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Date</label>
+                <input type="date" name="date" value="{{ selected_date }}" class="w-full h-12 px-4 rounded-xl border border-slate-200 dark:border-slate-700 dark:bg-slate-900 text-sm">
+            </div>
+            <div>
+                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Lecture</label>
+                <input type="number" name="lecture" value="{{ selected_lecture }}" min="1" max="10" class="w-full h-12 px-4 rounded-xl border border-slate-200 dark:border-slate-700 dark:bg-slate-900 text-sm">
+            </div>
+            <button type="submit" class="h-12 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-all shadow-lg shadow-blue-500/20">
+                Load Data
+            </button>
+        </form>
+    </div>
+
+    {% if selected_division and students %}
+    <form method="POST" action="{{ url_for('mark_attendance') }}" class="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm">
+        <input type="hidden" name="division" value="{{ selected_division }}">
+        <input type="hidden" name="date" value="{{ selected_date }}">
+        <input type="hidden" name="lecture" value="{{ selected_lecture }}">
+        <input type="hidden" name="subject" value="{{ selected_subject }}">
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-left">
+                <thead>
+                    <tr class="bg-slate-50 dark:bg-slate-900/50 text-slate-400 text-[10px] font-black uppercase tracking-widest border-b border-slate-100 dark:border-slate-700">
+                        <th class="px-8 py-5">Roll No</th>
+                        <th class="px-8 py-5">Student Name</th>
+                        <th class="px-8 py-5 text-center">Marking</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
+                    {% for student in students %}
+                    <tr>
+                        <td class="px-8 py-5 text-slate-400 font-mono text-xs">{{ student.roll_number or '-' }}</td>
+                        <td class="px-8 py-5 font-bold text-slate-900 dark:text-white">{{ student.name }}</td>
+                        <td class="px-8 py-5">
+                            <div class="flex items-center justify-center gap-8">
+                                <label class="flex items-center gap-2 cursor-pointer group">
+                                    <input type="radio" name="status_{{ student.id }}" value="Present" class="text-blue-600 focus:ring-blue-500" 
+                                        {% if existing_records.get(student.id) == 'Present' or student.id not in existing_records %}checked{% endif %}>
+                                    <span class="text-xs font-bold text-slate-600 group-hover:text-blue-600 transition-colors">P</span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer group">
+                                    <input type="radio" name="status_{{ student.id }}" value="Absent" class="text-red-600 focus:ring-red-500"
+                                        {% if existing_records.get(student.id) == 'Absent' %}checked{% endif %}>
+                                    <span class="text-xs font-bold text-slate-600 group-hover:text-red-600 transition-colors">A</span>
+                                </label>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="p-8 bg-slate-50 dark:bg-slate-900/30 flex justify-end border-t border-slate-100 dark:border-slate-700">
+            <button type="submit" class="px-12 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-all shadow-lg shadow-blue-500/20">
+                Commit Attendance
+            </button>
+        </div>
+    </form>
+    {% endif %}
+</div>
+{% endblock %}

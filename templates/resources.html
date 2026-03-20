@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Resources{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto py-12 px-6">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
+        <div>
+            <h1 class="text-4xl font-black text-slate-900 dark:text-white tracking-tight">Academic Resources</h1>
+            <p class="text-slate-500 mt-2">Access study materials, previous papers, and syllabi.</p>
+        </div>
+        
+        <!-- Filters -->
+        <form method="GET" action="{{ url_for('resources') }}" class="flex flex-wrap gap-3">
+            <select name="subject" onchange="this.form.submit()" class="h-10 px-4 rounded-full border border-slate-200 dark:border-slate-700 dark:bg-slate-800 text-xs font-bold uppercase tracking-widest">
+                <option value="">All Subjects</option>
+                {% for sub in subjects %}
+                <option value="{{ sub }}" {% if request.args.get('subject') == sub %}selected{% endif %}>{{ sub }}</option>
+                {% endfor %}
+            </select>
+            <select name="type" onchange="this.form.submit()" class="h-10 px-4 rounded-full border border-slate-200 dark:border-slate-700 dark:bg-slate-800 text-xs font-bold uppercase tracking-widest">
+                <option value="">All Types</option>
+                <option value="PYQ" {% if request.args.get('type') == 'PYQ' %}selected{% endif %}>PYQ</option>
+                <option value="CCA" {% if request.args.get('type') == 'CCA' %}selected{% endif %}>CCA</option>
+                <option value="Syllabus" {% if request.args.get('type') == 'Syllabus' %}selected{% endif %}>Syllabus</option>
+            </select>
+            {% if request.args.get('subject') or request.args.get('type') %}
+            <a href="{{ url_for('resources') }}" class="h-10 px-4 flex items-center bg-slate-100 dark:bg-slate-800 text-slate-500 rounded-full hover:bg-slate-200 transition-colors">
+                <span class="material-symbols-outlined text-sm">close</span>
+            </a>
+            {% endif %}
+        </form>
+    </div>
+
+    {% if resources %}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {% for res in resources %}
+        <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl overflow-hidden hover:shadow-xl hover:shadow-slate-200/50 dark:hover:shadow-none transition-all flex flex-col group">
+            <div class="p-8 flex-1">
+                <div class="flex justify-between items-start mb-6">
+                    <div class="px-3 py-1 rounded-lg bg-blue-50 dark:bg-blue-900/20 text-blue-600 text-[10px] font-black uppercase tracking-widest">
+                        {{ res.type or 'Resource' }}
+                    </div>
+                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{{ res.upload_date.strftime('%d %b %Y') }}</span>
+                </div>
+                <h3 class="text-xl font-black text-slate-900 dark:text-white leading-tight mb-2 group-hover:text-blue-600 transition-colors">{{ res.title }}</h3>
+                <p class="text-sm font-bold text-slate-400 uppercase tracking-widest mb-6">{{ res.subject }}</p>
+            </div>
+            
+            <a href="{{ url_for('static', filename='uploads/' + res.filename) }}" target="_blank"
+                class="flex items-center justify-between px-8 py-5 bg-slate-50 dark:bg-slate-900/50 hover:bg-blue-600 group-hover:text-white transition-all border-t border-slate-100 dark:border-slate-700">
+                <span class="text-xs font-black uppercase tracking-widest">View PDF</span>
+                <span class="material-symbols-outlined text-[20px]">picture_as_pdf</span>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-24 bg-slate-50 dark:bg-slate-800/30 rounded-3xl border border-dashed border-slate-200 dark:border-slate-700">
+        <span class="material-symbols-outlined text-6xl text-slate-300 mb-4">folder_off</span>
+        <h3 class="text-xl font-bold text-slate-400">No resources found</h3>
+        <p class="text-slate-500 mt-2">Adjust your filters or check back later.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

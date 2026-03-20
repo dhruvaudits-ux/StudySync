@@ -1,0 +1,57 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Upload Resource{% endblock %}
+{% block header_title %}Content Upload{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <div class="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm">
+        <div class="p-8 border-b border-slate-50 dark:border-slate-700 bg-slate-50/30">
+            <h3 class="font-black text-slate-900 dark:text-white tracking-tight">Upload New PDF Resource</h3>
+            <p class="text-xs text-slate-400 mt-1 uppercase font-bold tracking-widest">Select subject and document type</p>
+        </div>
+        
+        <form action="{{ url_for('admin_upload') }}" method="POST" enctype="multipart/form-data" class="p-8 space-y-6">
+            <div class="space-y-2">
+                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest">Document Title</label>
+                <input type="text" name="title" required placeholder="e.g. Thermodynamics Formula Sheet"
+                    class="w-full h-12 px-4 rounded-xl border border-slate-200 dark:border-slate-700 dark:bg-slate-900 text-sm focus:ring-2 focus:ring-blue-500/20">
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-2">
+                    <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest">Subject</label>
+                    <select name="subject" required class="w-full h-12 px-4 rounded-xl border border-slate-200 dark:border-slate-700 dark:bg-slate-900 text-sm focus:ring-2 focus:ring-blue-500/20">
+                        {% for sub in subjects %}
+                        <option value="{{ sub }}">{{ sub }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="space-y-2">
+                    <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest">Resource Type</label>
+                    <select name="type" required class="w-full h-12 px-4 rounded-xl border border-slate-200 dark:border-slate-700 dark:bg-slate-900 text-sm focus:ring-2 focus:ring-blue-500/20">
+                        <option value="PYQ">Previous Year Question (PYQ)</option>
+                        <option value="CCA">Continuous Assessment (CCA)</option>
+                        <option value="Syllabus">Official Syllabus</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest">PDF File</label>
+                <div class="relative h-32 w-full border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-2xl flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                    <input type="file" name="file" accept=".pdf" required class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                    <span class="material-symbols-outlined text-3xl text-slate-400 mb-2">upload_file</span>
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Click to select PDF</span>
+                </div>
+            </div>
+
+            <div class="pt-4">
+                <button type="submit" class="w-full h-14 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-2xl transition-all shadow-lg shadow-blue-500/20 flex items-center justify-center gap-3">
+                    <span class="material-symbols-outlined">publish</span>
+                    START UPLOAD
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
