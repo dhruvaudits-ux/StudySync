@@ -1,20 +1,26 @@
 import os
+import cloudinary
+import cloudinary.uploader
 from functools import wraps
 from flask import Flask, render_template, url_for, redirect, flash, request, abort
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
-from werkzeug.utils import secure_filename
 from models import db, User, Subject, PYQ, UserPYQ, StudyPlanner, Activity, Attendance, Resource
 from dotenv import load_dotenv
 import json
-import uuid
 from datetime import datetime
 
 load_dotenv()
 
+# Cloudinary Configuration
+cloudinary.config(
+    cloud_name=os.getenv('CLOUDINARY_CLOUD_NAME', 'duxkzbatg'),
+    api_key=os.getenv('CLOUDINARY_API_KEY', '429586186666547'),
+    api_secret=os.getenv('CLOUDINARY_API_SECRET', 'Mi3yz6c_yRRS6aq_5gQ_6peIIpg')
+)
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'default-secret-key')
-app.config['UPLOAD_FOLDER'] = os.path.join(app.root_path, 'static/uploads')
 
 # Database configuration: use DATABASE_URL (PostgreSQL) if available, otherwise fallback to SQLite
 _database_url = os.getenv('DATABASE_URL')
@@ -31,10 +37,6 @@ else:
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# Setup Image Uploads
-UPLOAD_FOLDER = os.path.join('static', 'uploads')
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
 
 def allowed_file(filename):
@@ -373,33 +375,24 @@ def upload_profile_pic():
         return redirect(url_for('account'))
         
     if file and allowed_file(file.filename):
-        filename = secure_filename(file.filename)
-        # Gen strict unique identifier to prevent browser caching & collisions
-        unique_filename = f"{current_user.id}_{uuid.uuid4().hex[:8]}_{filename}"
-        file_path = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
+        try:
+            # Upload to Cloudinary
+            upload_result = cloudinary.uploader.upload(file, folder="avatars/")
+            avatar_url = upload_result.get('secure_url')
+            
+            # Update user record with the Cloudinary URL
+            current_user.avatar_url = avatar_url
+            db.session.commit()
+            
+            # Log telemetry
+            activity = Activity(user_id=current_user.id, action='updated_avatar')
+            db.session.add(activity)
+            db.session.commit()
+            
+            flash('Profile picture successfully updated!', 'success')
+        except Exception as e:
+            flash(f'Error uploading to Cloudinary: {str(e)}', 'error')
         
-        # Save payload
-        file.save(file_path)
-        
-        # Optionally remove old profile pic locally if it's not the default
-        if current_user.profile_pic and current_user.profile_pic != 'default.png':
-            old_path = os.path.join(app.config['UPLOAD_FOLDER'], current_user.profile_pic)
-            if os.path.exists(old_path):
-                try:
-                    os.remove(old_path)
-                except Exception:
-                    pass
-        
-        # Update user record with just the filename
-        current_user.profile_pic = unique_filename
-        db.session.commit()
-        
-        # Log telemetry naturally
-        activity = Activity(user_id=current_user.id, action='updated_avatar')
-        db.session.add(activity)
-        db.session.commit()
-        
-        flash('Profile picture successfully updated!', 'success')
         return redirect(url_for('account'))
     else:
         flash('Allowed image types are -> png, jpg, jpeg, gif, webp', 'error')
@@ -546,27 +539,37 @@ def admin_upload():
             return redirect(request.url)
 
         if file and file.filename.lower().endswith('.pdf'):
-            filename = secure_filename(file.filename)
-            # Add timestamp to avoid overwrites
-            filename = f"{datetime.now().strftime('%Y%m%d%H%M%S')}_{filename}"
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            try:
+                # Upload to Cloudinary with resource_type="raw" for PDFs
+                upload_result = cloudinary.uploader.upload(
+                    file, 
+                    folder="resources/",
+                    resource_type="raw",
+                    use_filename=True,
+                    unique_filename=True
+                )
+                pdf_url = upload_result.get('secure_url')
 
-            new_resource = Resource(
-                title=title,
-                subject=subject,
-                type=file_type,
-                filename=filename
-            )
-            db.session.add(new_resource)
-            db.session.commit()
-            
-            # Log activity
-            activity = Activity(user_id=current_user.id, action=f'uploaded_{file_type.lower()}')
-            db.session.add(activity)
-            db.session.commit()
+                new_resource = Resource(
+                    title=title,
+                    subject=subject,
+                    type=file_type,
+                    filename=file.filename,
+                    pdf_url=pdf_url
+                )
+                db.session.add(new_resource)
+                db.session.commit()
+                
+                # Log activity
+                activity = Activity(user_id=current_user.id, action=f'uploaded_{file_type.lower()}')
+                db.session.add(activity)
+                db.session.commit()
 
-            flash(f"Resource '{title}' uploaded successfully!", "success")
-            return redirect(url_for('admin_dashboard'))
+                flash(f"Resource '{title}' uploaded successfully!", "success")
+                return redirect(url_for('admin_dashboard'))
+            except Exception as e:
+                flash(f"Error uploading to Cloudinary: {str(e)}", "danger")
+                return redirect(request.url)
         else:
             flash("Only PDF files are allowed!", "danger")
             return redirect(request.url)
@@ -764,6 +767,25 @@ with app.app_context():
         db.session.commit()
     except Exception:
         db.session.rollback()  # Column already exists or table doesn't exist — safe to ignore
+
+    # Cloudinary migrations
+    try:
+        db.session.execute(text('ALTER TABLE "user" ADD COLUMN avatar_url VARCHAR(500)'))
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+
+    try:
+        db.session.execute(text('ALTER TABLE pyq ADD COLUMN pdf_url VARCHAR(500)'))
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+
+    try:
+        db.session.execute(text('ALTER TABLE resource ADD COLUMN pdf_url VARCHAR(500)'))
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
 
     # Initialize default admin if none exists
     admin_exists = User.query.filter_by(role='admin').first()

@@ -46,7 +46,7 @@
                 <p class="text-sm font-bold text-slate-400 uppercase tracking-widest mb-6">{{ res.subject }}</p>
             </div>
             
-            <a href="{{ url_for('static', filename='uploads/' + res.filename) }}" target="_blank"
+            <a href="{{ res.pdf_url or url_for('static', filename='uploads/' + res.filename) }}" target="_blank"
                 class="flex items-center justify-between px-8 py-5 bg-slate-50 dark:bg-slate-900/50 hover:bg-blue-600 group-hover:text-white transition-all border-t border-slate-100 dark:border-slate-700">
                 <span class="text-xs font-black uppercase tracking-widest">View PDF</span>
                 <span class="material-symbols-outlined text-[20px]">picture_as_pdf</span>
