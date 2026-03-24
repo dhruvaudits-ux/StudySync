@@ -838,33 +838,48 @@ def forbidden(e):
 # without relying on the __main__ block (which is never reached under Gunicorn).
 with app.app_context():
     db.create_all()
-    # Safely add 'role' column to existing databases that predate this migration
-    # Note: "user" is a reserved keyword in PostgreSQL, so we quote it.
+    # Database migrations & stabilization
     from sqlalchemy import text
+    
+    # 1. Core fields
     try:
         db.session.execute(text('ALTER TABLE "user" ADD COLUMN role VARCHAR(20) NOT NULL DEFAULT \'student\''))
         db.session.commit()
     except Exception:
-        db.session.rollback()  # Column already exists or table doesn't exist — safe to ignore
-
-    # Cloudinary migrations
-    try:
-        db.session.execute(text('ALTER TABLE "user" ADD COLUMN avatar_url VARCHAR(500)'))
-        db.session.commit()
-    except Exception:
         db.session.rollback()
 
-    try:
-        db.session.execute(text('ALTER TABLE pyq ADD COLUMN pdf_url VARCHAR(500)'))
-        db.session.commit()
-    except Exception:
-        db.session.rollback()
+    # 2. Cloudinary URL columns
+    migration_columns = [
+        ('user', 'avatar_url', 'VARCHAR(500)'),
+        ('pyq', 'pdf_url', 'VARCHAR(500)'),
+        ('resource', 'pdf_url', 'VARCHAR(500)')
+    ]
+    for table, col, col_type in migration_columns:
+        try:
+            db.session.execute(text(f'ALTER TABLE "{table}" ADD COLUMN {col} {col_type}'))
+            db.session.commit()
+        except Exception:
+            db.session.rollback()
 
-    try:
-        db.session.execute(text('ALTER TABLE resource ADD COLUMN pdf_url VARCHAR(500)'))
-        db.session.commit()
-    except Exception:
-        db.session.rollback()
+    # 3. Drop NOT NULL constraints for legacy fields (Cloudinary migration fix)
+    # Note: PostgreSQL uses ALTER COLUMN ... DROP NOT NULL. SQLite does not support this easily.
+    not_null_fixes = [
+        ('user', 'profile_pic'),
+        ('resource', 'filename'),
+        ('pyq', 'file_name')
+    ]
+    for table, col in not_null_fixes:
+        try:
+            db.session.execute(text(f'ALTER TABLE "{table}" ALTER COLUMN {col} DROP NOT NULL'))
+            db.session.commit()
+            print(f"[OK] Dropped NOT NULL on {table}.{col}")
+        except Exception as e:
+            db.session.rollback()
+            # Silence error if it's SQLite or already dropped
+            if "ALTER" in str(e):
+                print(f"[Info] Migration skipped for {table}.{col} (likely SQLite or already fixed)")
+            else:
+                print(f"[Warning] Failed to drop NOT NULL on {table}.{col}: {e}")
 
     # Initialize default admin if none exists
     admin_exists = User.query.filter_by(role='admin').first()

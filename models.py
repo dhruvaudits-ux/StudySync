@@ -12,6 +12,7 @@ class User(db.Model, UserMixin):
     phone = db.Column(db.String(20))
     roll_number = db.Column(db.String(20))
     division = db.Column(db.String(10))
+    profile_pic = db.Column(db.String(255), nullable=True)
     avatar_url = db.Column(db.String(500), nullable=True)
     # Role: 'student' (default) or 'admin'
     role = db.Column(db.String(20), nullable=False, default='student')
@@ -48,6 +49,7 @@ class PYQ(db.Model):
     subject = db.Column(db.String(100), nullable=False)
     year = db.Column(db.Integer, nullable=False)
     type = db.Column(db.String(10), nullable=False)
+    file_name = db.Column(db.String(255), nullable=True)
     pdf_url = db.Column(db.String(500), nullable=True)
 
     def __repr__(self):
@@ -100,6 +102,7 @@ class Resource(db.Model):
     title = db.Column(db.String(200), nullable=False)
     subject = db.Column(db.String(100), nullable=False)
     type = db.Column(db.String(50), nullable=False) # PYQ / CCA / Syllabus
+    filename = db.Column(db.String(255), nullable=True)
     pdf_url = db.Column(db.String(500), nullable=True)
     upload_date = db.Column(db.DateTime, default=datetime.utcnow)
 
