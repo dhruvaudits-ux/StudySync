@@ -221,26 +221,14 @@
                 {% if current_user.is_authenticated %}
                 <div class="relative ml-2" id="profileDropdownWrapper">
                     <button onclick="toggleProfileDropdown()" class="w-10 h-10 rounded-full border-2 border-slate-200 dark:border-slate-700 hover:border-primary dark:hover:border-blue-400 focus:outline-none overflow-hidden transition-all shadow-sm group bg-slate-50 dark:bg-slate-700">
-                        {% if current_user.profile_pic and current_user.profile_pic != 'default.png' %}
-                            <img src="{{ url_for('static', filename='uploads/' + current_user.profile_pic) }}" alt="Avatar" class="w-full h-full object-cover group-hover:scale-105 transition-transform">
-                        {% else %}
-                            <div class="w-full h-full avatar-fallback text-lg">
-                                {{ (current_user.name or current_user.email)[:1] | upper }}
-                            </div>
-                        {% endif %}
+                        <img src="{{ current_user.avatar_url or url_for('static', filename='default.png') }}" alt="Avatar" class="w-full h-full object-cover group-hover:scale-105 transition-transform">
                     </button>
                     
                     <!-- Dropdown Menu -->
                     <div id="profileDropdown" class="absolute right-0 mt-3 w-64 bg-white dark:bg-slate-800 rounded-2xl shadow-xl dark:shadow-soft-dark border border-slate-100 dark:border-slate-700/80 transform opacity-0 scale-95 pointer-events-none transition-all duration-200 origin-top-right z-50 overflow-hidden">
                         <div class="p-5 border-b border-slate-100 dark:border-slate-700/50 bg-slate-50/50 dark:bg-slate-800/50 flex items-center gap-3">
                             <div class="w-10 h-10 rounded-full border border-slate-200 dark:border-slate-700 overflow-hidden shrink-0">
-                                {% if current_user.profile_pic and current_user.profile_pic != 'default.png' %}
-                                    <img src="{{ url_for('static', filename='uploads/' + current_user.profile_pic) }}" alt="Avatar" class="w-full h-full object-cover">
-                                {% else %}
-                                    <div class="w-full h-full avatar-fallback text-lg">
-                                        {{ (current_user.name or current_user.email)[:1] | upper }}
-                                    </div>
-                                {% endif %}
+                                <img src="{{ current_user.avatar_url or url_for('static', filename='default.png') }}" alt="Avatar" class="w-full h-full object-cover">
                             </div>
                             <div class="flex-1 min-w-0">
                                 <p class="text-sm font-bold text-slate-800 dark:text-white truncate">{{ current_user.name }}</p>

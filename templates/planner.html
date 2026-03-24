@@ -107,6 +107,11 @@
                 
                 <!-- Actions -->
                 <div class="flex-shrink-0 flex gap-2 md:opacity-0 group-hover:opacity-100 transition-opacity">
+                    <form action="{{ url_for('delete_planner_task', task_id=task.id) }}" method="POST" onsubmit="return confirm('Delete this task?')">
+                        <button type="submit" class="p-2 text-slate-400 hover:text-red-500 transition-colors" title="Delete Task">
+                            <span class="material-symbols-outlined text-[20px]">delete</span>
+                        </button>
+                    </form>
                     <span class="text-xs font-bold text-slate-400 dark:text-slate-500 opacity-50 px-3 py-2">
                         {{ task.created_at.strftime('%b %d') }}
                     </span>

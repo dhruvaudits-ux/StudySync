@@ -8,7 +8,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from models import db, User, Subject, PYQ, UserPYQ, StudyPlanner, Activity, Attendance, Resource
 from dotenv import load_dotenv
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 
 load_dotenv()
 
@@ -313,27 +313,61 @@ def toggle_planner_task(task_id):
     db.session.commit()
     return redirect(url_for('planner'))
 
+@app.route('/planner/delete/<int:task_id>', methods=['POST'])
+@login_required
+def delete_planner_task(task_id):
+    task = StudyPlanner.query.get_or_404(task_id)
+    if task.user_id != current_user.id:
+        flash('Unauthorized action.', 'error')
+        return redirect(url_for('planner'))
+    
+    db.session.delete(task)
+    db.session.commit()
+    flash('Task deleted from planner.', 'success')
+    return redirect(url_for('planner'))
+
 @app.route('/activity')
 @login_required
 def activity():
-    activities = Activity.query.filter_by(user_id=current_user.id).order_by(Activity.timestamp).all()
+    # Fetch last 7 days of activity for the timeline
+    today = datetime.utcnow().date()
+    seven_days_ago = today - timedelta(days=6)
     
+    activities = Activity.query.filter(
+        Activity.user_id == current_user.id,
+        Activity.timestamp >= seven_days_ago
+    ).order_by(Activity.timestamp).all()
+    
+    # Initialize timeline with 0s for the last 7 days
     bar_data = {}
+    for i in range(7):
+        day = seven_days_ago + timedelta(days=i)
+        bar_data[day.strftime('%Y-%m-%d')] = 0
+        
     pie_data = {}
+    
+    # Fetch ALL activities for the rating and distribution
+    all_user_activities = Activity.query.filter_by(user_id=current_user.id).all()
     
     num_completed_tasks = 0
     num_completed_pyqs = 0
-    total_activities = len(activities)
+    total_activities = len(all_user_activities)
     
-    for act in activities:
-        date_str = act.timestamp.strftime('%Y-%m-%d')
-        bar_data[date_str] = bar_data.get(date_str, 0) + 1
-        pie_data[act.action] = pie_data.get(act.action, 0) + 1
+    for act in all_user_activities:
+        # Update pie data (distribution)
+        action_label = act.action.replace('_', ' ').title()
+        pie_data[action_label] = pie_data.get(action_label, 0) + 1
         
+        # Update rating counters
         if act.action == 'completed_task':
             num_completed_tasks += 1
         elif act.action == 'completed_pyq':
             num_completed_pyqs += 1
+            
+        # Update timeline if within range
+        date_str = act.timestamp.strftime('%Y-%m-%d')
+        if date_str in bar_data:
+            bar_data[date_str] += 1
             
     # Calculate Rating (0 to 10)
     score = (num_completed_tasks * 0.5) + (num_completed_pyqs * 1.0) + (total_activities * 0.1)
@@ -376,6 +410,14 @@ def upload_profile_pic():
         
     if file and allowed_file(file.filename):
         try:
+            # Check file size (limit to 5MB for avatars)
+            file.seek(0, os.SEEK_END)
+            file_length = file.tell()
+            if file_length > 5 * 1024 * 1024:
+                flash('File too large. Max size is 5MB.', 'error')
+                return redirect(url_for('account'))
+            file.seek(0)
+
             # Upload to Cloudinary
             upload_result = cloudinary.uploader.upload(file, folder="avatars/")
             avatar_url = upload_result.get('secure_url')
@@ -397,6 +439,17 @@ def upload_profile_pic():
     else:
         flash('Allowed image types are -> png, jpg, jpeg, gif, webp', 'error')
         return redirect(url_for('account'))
+@app.route('/delete_avatar', methods=['POST'])
+@login_required
+def delete_avatar():
+    if current_user.avatar_url:
+        # We don't necessarily need to delete from Cloudinary here for simple cleanup,
+        # but we definitely reset the URL in DB.
+        current_user.avatar_url = None
+        db.session.commit()
+        flash('Profile picture removed.', 'success')
+    return redirect(url_for('account'))
+
 @app.route('/pyqs')
 @login_required
 def pyqs():
@@ -540,6 +593,14 @@ def admin_upload():
 
         if file and file.filename.lower().endswith('.pdf'):
             try:
+                # Check file size (limit to 10MB for PDFs)
+                file.seek(0, os.SEEK_END)
+                file_length = file.tell()
+                if file_length > 10 * 1024 * 1024:
+                    flash('File too large. Max size is 10MB.', 'danger')
+                    return redirect(request.url)
+                file.seek(0)
+
                 # Upload to Cloudinary with resource_type="raw" for PDFs
                 upload_result = cloudinary.uploader.upload(
                     file, 
@@ -554,7 +615,6 @@ def admin_upload():
                     title=title,
                     subject=subject,
                     type=file_type,
-                    filename=file.filename,
                     pdf_url=pdf_url
                 )
                 db.session.add(new_resource)
@@ -617,6 +677,25 @@ def toggle_user_role(user_id):
         flash(f"Error updating role: {str(e)}", "danger")
         
     return redirect(url_for('admin_users'))
+
+@app.route('/admin/resources')
+@admin_required
+def admin_resources():
+    all_resources = Resource.query.order_by(Resource.upload_date.desc()).all()
+    return render_template('admin/resources.html', resources=all_resources)
+
+@app.route('/admin/resources/delete/<int:resource_id>', methods=['POST'])
+@admin_required
+def delete_resource(resource_id):
+    resource = Resource.query.get_or_404(resource_id)
+    try:
+        db.session.delete(resource)
+        db.session.commit()
+        flash(f"Resource '{resource.title}' deleted successfully.", "success")
+    except Exception as e:
+        db.session.rollback()
+        flash(f"Error deleting resource: {str(e)}", "danger")
+    return redirect(url_for('admin_resources'))
 
 # ── Attendance Routes ─────────────────────────────────────────────────────────
 
@@ -807,4 +886,5 @@ with app.app_context():
         print("[OK] Admin exists in database.")
 
 if __name__ == '__main__':
-    app.run(host='127.0.0.1', port=5000, debug=True)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=False)

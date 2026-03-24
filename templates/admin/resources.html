@@ -1,0 +1,63 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Manage Resources{% endblock %}
+{% block header_title %}Academic Resources Management{% endblock %}
+
+{% block content %}
+<div class="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm">
+    <div class="overflow-x-auto">
+        <table class="w-full text-left">
+            <thead>
+                <tr class="bg-slate-50 dark:bg-slate-900/50 text-slate-400 text-[10px] font-black uppercase tracking-widest border-b border-slate-100 dark:border-slate-700">
+                    <th class="px-8 py-5">Title</th>
+                    <th class="px-8 py-5">Subject</th>
+                    <th class="px-8 py-5">Type</th>
+                    <th class="px-8 py-5">Upload Date</th>
+                    <th class="px-8 py-5 text-right">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
+                {% for res in resources %}
+                <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-700/30 transition-colors">
+                    <td class="px-8 py-5">
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-primary">picture_as_pdf</span>
+                            <span class="font-bold text-slate-900 dark:text-white">{{ res.title }}</span>
+                        </div>
+                    </td>
+                    <td class="px-8 py-5 text-sm text-slate-600 dark:text-slate-400">
+                        {{ res.subject }}
+                    </td>
+                    <td class="px-8 py-5">
+                        <span class="px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wide bg-blue-50 text-blue-600 dark:bg-blue-900/20">
+                            {{ res.type }}
+                        </span>
+                    </td>
+                    <td class="px-8 py-5 text-xs text-slate-400">
+                        {{ res.upload_date.strftime('%d %b %Y') }}
+                    </td>
+                    <td class="px-8 py-5 text-right">
+                        <div class="flex items-center justify-end gap-2">
+                            <a href="{{ res.pdf_url }}" target="_blank" class="p-2 text-slate-400 hover:text-blue-500 transition-colors" title="View PDF">
+                                <span class="material-symbols-outlined text-[20px]">visibility</span>
+                            </a>
+                            <form action="{{ url_for('delete_resource', resource_id=res.id) }}" method="POST" onsubmit="return confirm('Delete this resource?')">
+                                <button type="submit" class="p-2 text-slate-400 hover:text-red-500 transition-colors" title="Delete Resource">
+                                    <span class="material-symbols-outlined text-[20px]">delete</span>
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+                {% if not resources %}
+                <tr>
+                    <td colspan="5" class="px-8 py-16 text-center text-slate-400">
+                        No resources uploaded yet.
+                    </td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

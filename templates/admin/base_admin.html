@@ -65,6 +65,12 @@
                 <span class="material-symbols-outlined text-[20px]">upload_file</span>
                 <span class="text-sm font-medium">Upload PDF</span>
             </a>
+            <a href="{{ url_for('admin_resources') }}" 
+               class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all
+                      {% if request.endpoint == 'admin_resources' %} bg-blue-600 text-white shadow-lg shadow-blue-900/20 {% else %} text-slate-400 hover:text-white hover:bg-white/5 {% endif %}">
+                <span class="material-symbols-outlined text-[20px]">folder_managed</span>
+                <span class="text-sm font-medium">Manage Content</span>
+            </a>
             
             <div class="mt-auto border-t border-white/5 pt-4">
                 <a href="{{ url_for('logout') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-red-400 hover:bg-red-500/10 transition-all">
